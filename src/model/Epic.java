@@ -38,15 +38,17 @@ public class Epic extends Task {
      * метод обновления subTask в листе subTasks
      */
     public void updateSubTask(SubTask subTask) {
-        /*for (int i = 0; i < subTasks.size(); i++) {
+
+        /* не очень понял замечения.
+        Вы написали, что по сути я задублировал одно и то же действие на апдейт субтаска?
+        В первой версии я закомментил этот цикл для уточнения, какой из вариантов лучше. Через equals или contains */
+        for (int i = 0; i < subTasks.size(); i++) {
             if (subTasks.get(i).equals(subTask)) {
                 subTasks.set(i, subTask);
                 return;
             }
-        }*/
-        if (subTasks.contains(subTask)) {
-            subTasks.set(subTasks.indexOf(subTask), subTask);
         }
+
         updateStatus();
     }
 
@@ -54,34 +56,28 @@ public class Epic extends Task {
      * метод высчитывает статус Эпика на основании статусов всех его субтасков
      */
     public void updateStatus() {
-        boolean AllNew = true;
-        boolean AllDone = true;
+
+        boolean isDifferentStatus = false;
 
         if (subTasks.isEmpty()) {
             this.setStatus(Status.NEW);
             return;
         }
 
+        Status statusOfSubTasks = subTasks.get(0).getStatus();
+
         for (SubTask subTask : subTasks) {
-            // проверка, что все субтакси Status.NEW
-            if (subTask.getStatus() != Status.NEW) {
-                AllNew = false;
-            }
-
-            // проверка, что все субтакси Status.DONE
-            if (subTask.getStatus() != Status.DONE) {
-                AllDone = false;
+            if (subTask.getStatus() != statusOfSubTasks) {
+                isDifferentStatus = true;
+                break;
             }
         }
 
-        if (AllNew) {
-            this.setStatus(Status.NEW);
-        } else if (AllDone) {
-            this.setStatus(Status.DONE);
-        } else {
+        if (isDifferentStatus) {
             this.setStatus(Status.IN_PROGRESS);
+        } else {
+            this.setStatus(statusOfSubTasks);
         }
-
 
     }
 }

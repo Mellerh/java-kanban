@@ -25,7 +25,12 @@ public class Main {
                 Status.DONE, "описание сабтаска1 эпика1"));
 
         Epic epic1 = taskManager.getEpicById(epic.getId());
-        System.out.println(epic1);
+
+        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
+                Status.DONE, "описание сабтаска2 эпика1"));
+
         System.out.println(epic1.getSubTasks());
+
+        System.out.println(epic1);
     }
 }
