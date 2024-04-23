@@ -7,15 +7,34 @@ import model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Класс для управления всеми задачами
- */
-interface TaskManager {
+public class InMemoryTaskManager implements TaskManager {
+
+    // хеш-мап для хранения задач. Integer - для хранения id задач
+    public HashMap<Integer, Task> tasks;
+
+    // хеш-мапа для хранения эпиков
+    private final HashMap<Integer, Epic> epics;
+
+    // хеш-мапа для хранения сабТасков эпика
+    private final HashMap<Integer, SubTask> subTasks;
+
+    // глобальный id-генератор для задач
+    private int id = 0;
+
+
+    public InMemoryTaskManager() {
+        this.tasks = new HashMap<>();
+        this.epics = new HashMap<>();
+        this.subTasks = new HashMap<>();
+    }
 
     /**
      * метод для генерации нового id
      */
-    int idGenerator();
+    @Override
+    private int idGenerator() {
+        return ++id;
+    }
 
 
     // TASK-методы
@@ -23,28 +42,32 @@ interface TaskManager {
     /**
      * метод для вывода всех задач Task
      */
-    ArrayList<Task> getTasks() {
+    @Override
+    public ArrayList<Task> getTasks() {
         return new ArrayList<>(tasks.values());
     }
 
     /**
      * метод для удаления всех Task
      */
-    void removeAllTasks() {
+    @Override
+    public void removeAllTasks() {
         tasks.clear();
     }
 
     /**
      * метод для поиска Task по её id
      */
-    Task getTaskById(int id) {
+    @Override
+    public Task getTaskById(int id) {
         return tasks.get(id);
     }
 
     /**
      * метод для создания нового Task
      */
-    Task createTask(Task task) {
+    @Override
+    public Task createTask(Task task) {
         // создаём id для задачи
         task.setId(idGenerator());
         // сохраняем новый task в хеш-таблицу
@@ -57,14 +80,16 @@ interface TaskManager {
     /**
      * метод для обновления Task
      */
-    void upDateTask(Task task) {
+    @Override
+    public void upDateTask(Task task) {
         tasks.put(task.getId(), task);
     }
 
     /**
      * метод для удаление Task по id
      */
-    void removeTaskById(int id) {
+    @Override
+    public void removeTaskById(int id) {
         tasks.remove(id);
     }
 
@@ -74,14 +99,16 @@ interface TaskManager {
     /**
      * метод для вывода всех задач Epic
      */
-    ArrayList<Epic> getEpics() {
+    @Override
+    public ArrayList<Epic> getEpics() {
         return new ArrayList<>(epics.values());
     }
 
     /**
      * метод для удаления всех Epic, и, соответственно, всех субТасков
      */
-    void removeAllEpics() {
+    @Override
+    public void removeAllEpics() {
         epics.clear();
         removeAllSubTasks();
     }
@@ -89,14 +116,16 @@ interface TaskManager {
     /**
      * метод для поиска Epic по её id
      */
-    Epic getEpicById(int id) {
+    @Override
+    public Epic getEpicById(int id) {
         return epics.get(id);
     }
 
     /**
      * метод для создания нового Epic
      */
-    Epic createEpic(Epic epic) {
+    @Override
+    public Epic createEpic(Epic epic) {
         // создаём id для задачи
         epic.setId(idGenerator());
         // сохраняем новый task в хеш-таблицу
@@ -111,7 +140,8 @@ interface TaskManager {
     /**
      * метод для обновления Epic
      */
-    void updateEpic(Epic epic) {
+    @Override
+    public void updateEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
 
         // проверяем, что epic нашёлся
@@ -127,14 +157,16 @@ interface TaskManager {
     /**
      * метод для удаление Epic по id
      */
-    void removeEpicById(int id) {
+    @Override
+    public void removeEpicById(int id) {
         epics.remove(id);
     }
 
     /**
      * метод для получения списка всех подзадач определённого эпика
      */
-    ArrayList<SubTask> getAllSubTaskInEpic(Epic epic) {
+    @Override
+    public ArrayList<SubTask> getAllSubTaskInEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
         return savedEpic.getSubTasks();
     }
@@ -145,7 +177,8 @@ interface TaskManager {
     /**
      * метод для вывода всех задач SubTusk
      */
-    ArrayList<SubTask> getSubTasks() {
+    @Override
+    public ArrayList<SubTask> getSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
@@ -153,7 +186,8 @@ interface TaskManager {
      * метод для удаления всех SubTask
      * из-за удаления сабТасков обновятся все статусы у Эпиков
      */
-    void removeAllSubTasks() {
+    @Override
+    public void removeAllSubTasks() {
         subTasks.clear();
 
         // удаляем все субтаски в каждом Эпике
@@ -165,7 +199,8 @@ interface TaskManager {
     /**
      * метод для поиска SubTask по её id
      */
-    SubTask getSubTaskById(int id) {
+    @Override
+    public SubTask getSubTaskById(int id) {
         return subTasks.get(id);
     }
 
@@ -173,7 +208,8 @@ interface TaskManager {
      * метод для создания нового SubTask
      * также метод добавляем Субтаск в соответсвующий Эпик
      */
-    SubTask createSubTask(SubTask subTask) {
+    @Override
+    public SubTask createSubTask(SubTask subTask) {
         // создаём id для задачи
         subTask.setId(idGenerator());
         // сохраняем новый task в хеш-таблицу
@@ -189,7 +225,8 @@ interface TaskManager {
     /**
      * метод для обновления SubTask
      */
-    void updateSubTask(SubTask subTask) {
+    @Override
+    public void updateSubTask(SubTask subTask) {
         subTasks.put(subTask.getId(), subTask);
 
         Epic epic = epics.get(subTask.getEpicId());
@@ -199,7 +236,8 @@ interface TaskManager {
     /**
      * метод для удаление SubTask по id
      */
-    void removeSubTaskById(int id) {
+    @Override
+    public void removeSubTaskById(int id) {
         SubTask removedSubTask = subTasks.remove(id);
 
         Epic epic = epics.get(removedSubTask.getEpicId());
