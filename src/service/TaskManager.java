@@ -6,13 +6,14 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Класс для управления всеми задачами
  */
 interface TaskManager {
 
-    ArrayList<Task> getTasks();
+    List<Task> getTasks();
 
     void removeAllTasks();
 
@@ -24,7 +25,7 @@ interface TaskManager {
 
     void removeTaskById(int id);
 
-    ArrayList<Epic> getEpics();
+    List<Epic> getEpics();
 
     void removeAllEpics();
 
@@ -36,9 +37,9 @@ interface TaskManager {
 
     void removeEpicById(int id);
 
-    ArrayList<SubTask> getAllSubTaskInEpic(Epic epic);
+    List<SubTask> getAllSubTaskInEpic(Epic epic);
 
-    ArrayList<SubTask> getSubTasks();
+    List<SubTask> getSubTasks();
 
     void removeAllSubTasks();
 

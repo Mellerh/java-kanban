@@ -6,6 +6,7 @@ import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -42,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для вывода всех задач Task
      */
     @Override
-    public ArrayList<Task> getTasks() {
+    public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
     }
 
@@ -93,13 +94,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
+
     // EPIC-методы
 
     /**
      * метод для вывода всех задач Epic
      */
     @Override
-    public ArrayList<Epic> getEpics() {
+    public List<Epic> getEpics() {
         return new ArrayList<>(epics.values());
     }
 
@@ -165,7 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для получения списка всех подзадач определённого эпика
      */
     @Override
-    public ArrayList<SubTask> getAllSubTaskInEpic(Epic epic) {
+    public List<SubTask> getAllSubTaskInEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
         return savedEpic.getSubTasks();
     }
@@ -177,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для вывода всех задач SubTusk
      */
     @Override
-    public ArrayList<SubTask> getSubTasks() {
+    public List<SubTask> getSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
