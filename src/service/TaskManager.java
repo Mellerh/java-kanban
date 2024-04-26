@@ -11,7 +11,9 @@ import java.util.List;
 /**
  * Класс для управления всеми задачами
  */
-interface TaskManager {
+public interface TaskManager {
+
+    List<Task> getHistory();
 
     List<Task> getTasks();
 

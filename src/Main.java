@@ -2,13 +2,16 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
+import service.Managers;
 import service.TaskManager;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = new TaskManager();
+        TaskManager taskManager = Managers.getDefault();
+
+
         Task task = taskManager.createTask(new Task("Машина", Status.NEW, "нужно купить машину"));
 
         Task task1 = taskManager.createTask(new Task("Машина1", Status.NEW, "нужно купить машину1"));
@@ -31,6 +34,33 @@ public class Main {
 
         System.out.println(epic1.getSubTasks());
 
-        System.out.println(epic1);
+
+        printAllTasks(taskManager);
+    }
+
+
+    // метод для вывода все просмотренных задач
+    private static void printAllTasks(TaskManager manager) {
+        System.out.println("Задачи:");
+        for (Task task : manager.getTasks()) {
+            System.out.println(task);
+        }
+        System.out.println("Эпики:");
+        for (Task epic : manager.getEpics()) {
+            System.out.println(epic);
+
+            for (Task subTask : manager.getSubTasks()) {
+                System.out.println("--> " + subTask);
+            }
+        }
+        System.out.println("Подзадачи:");
+        for (Task subtask : manager.getSubTasks()) {
+            System.out.println(subtask);
+        }
+
+        System.out.println("История:");
+        for (Task task : manager.getHistory()) {
+            System.out.println(task);
+        }
     }
 }

@@ -19,11 +19,15 @@ public class InMemoryTaskManager implements TaskManager {
     // хеш-мапа для хранения сабТасков эпика
     private final HashMap<Integer, SubTask> subTasks;
 
+    // класс для работы с просмотренными задачами
+    private final InMemoryHistoryManager inMemoryHistoryManager;
+
     // глобальный id-генератор для задач
     private int id = 0;
 
 
-    public InMemoryTaskManager() {
+    public InMemoryTaskManager(InMemoryHistoryManager inMemoryHistoryManager) {
+        this.inMemoryHistoryManager = inMemoryHistoryManager;
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
@@ -36,6 +40,15 @@ public class InMemoryTaskManager implements TaskManager {
         return ++id;
     }
 
+    /**
+     * метод возвращает список просмотренных задач из кла из списка viewedTasks
+     */
+    @Override
+    public List<Task> getHistory() {
+        return inMemoryHistoryManager.getHist();
+    }
+
+
 
     // TASK-методы
 
@@ -44,6 +57,11 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getTasks() {
+        // добавляем просмотренные задачи в список
+        for (Task task : tasks.values()) {
+            inMemoryHistoryManager.addViewedT(task);
+        }
+
         return new ArrayList<>(tasks.values());
     }
 
@@ -60,6 +78,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Task getTaskById(int id) {
+        inMemoryHistoryManager.addViewedT(tasks.get(id));
+
         return tasks.get(id);
     }
 
@@ -102,6 +122,11 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Epic> getEpics() {
+        // добавляем просмотренные задачи в список
+        for (Epic epic : epics.values()) {
+            inMemoryHistoryManager.addViewedT(epic);
+        }
+
         return new ArrayList<>(epics.values());
     }
 
@@ -119,6 +144,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Epic getEpicById(int id) {
+        inMemoryHistoryManager.addViewedT(epics.get(id));
+
         return epics.get(id);
     }
 
@@ -169,6 +196,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getAllSubTaskInEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
+
+        // добавить все сабТаски конкретного эпика в список просмотренных
+        for (SubTask subTask : savedEpic.getSubTasks()) {
+            inMemoryHistoryManager.addViewedT(subTask);
+        }
+
         return savedEpic.getSubTasks();
     }
 
@@ -180,6 +213,11 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<SubTask> getSubTasks() {
+        // добавляем просмотренные задачи в список
+        for (SubTask subTask : subTasks.values()) {
+            inMemoryHistoryManager.addViewedT(subTask);
+        }
+
         return new ArrayList<>(subTasks.values());
     }
 
@@ -202,6 +240,8 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public SubTask getSubTaskById(int id) {
+        inMemoryHistoryManager.addViewedT(subTasks.get(id));
+
         return subTasks.get(id);
     }
 
