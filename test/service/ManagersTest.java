@@ -1,20 +1,20 @@
 package service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("ManagersTest")
 class ManagersTest {
 
     @Test
-    void managerShouldCreateTaskManagerObject() {
+    @DisplayName("Managers.getDefault() не должен возвращать null")
+    void managerGetDefaultShouldNotReturnNull() {
 
-        /*TaskManager taskManagerExpected = new InMemoryTaskManager(new InMemoryHistoryManager());
         TaskManager taskManagerResult = Managers.getDefault();
 
-        assertEquals(taskManagerExpected, taskManagerResult, "Ошибка создания InMemoryTaskManager " +
-                "в классе Managers");*/
-
+        assertNotNull(taskManagerResult, "Managers.getDefault() возвращает null");
     }
 
 }

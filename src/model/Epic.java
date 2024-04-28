@@ -64,7 +64,7 @@ public class Epic extends Task {
             return;
         }
 
-        Status statusOfSubTasks = subTasks.get(0).getStatus();
+        Status statusOfSubTasks = subTasks.getFirst().getStatus();
 
         for (SubTask subTask : subTasks) {
             if (subTask.getStatus() != statusOfSubTasks) {

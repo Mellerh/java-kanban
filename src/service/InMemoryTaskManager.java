@@ -57,10 +57,10 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getTasks() {
-        // добавляем просмотренные задачи в список
-        for (Task task : tasks.values()) {
+        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
+        /*for (Task task : tasks.values()) {
             inMemoryHistoryManager.addViewedT(task);
-        }
+        }*/
 
         return new ArrayList<>(tasks.values());
     }
@@ -122,10 +122,10 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Epic> getEpics() {
-        // добавляем просмотренные задачи в список
-        for (Epic epic : epics.values()) {
+        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
+        /*for (Epic epic : epics.values()) {
             inMemoryHistoryManager.addViewedT(epic);
-        }
+        }*/
 
         return new ArrayList<>(epics.values());
     }
@@ -197,10 +197,10 @@ public class InMemoryTaskManager implements TaskManager {
     public List<SubTask> getAllSubTaskInEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
 
-        // добавить все сабТаски конкретного эпика в список просмотренных
-        for (SubTask subTask : savedEpic.getSubTasks()) {
+        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
+        /*for (SubTask subTask : savedEpic.getSubTasks()) {
             inMemoryHistoryManager.addViewedT(subTask);
-        }
+        }*/
 
         return savedEpic.getSubTasks();
     }
@@ -213,10 +213,10 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<SubTask> getSubTasks() {
-        // добавляем просмотренные задачи в список
-        for (SubTask subTask : subTasks.values()) {
+        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
+        /*for (SubTask subTask : subTasks.values()) {
             inMemoryHistoryManager.addViewedT(subTask);
-        }
+        }*/
 
         return new ArrayList<>(subTasks.values());
     }

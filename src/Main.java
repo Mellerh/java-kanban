@@ -14,25 +14,28 @@ public class Main {
 
         Task task = taskManager.createTask(new Task("Машина", Status.NEW, "нужно купить машину"));
 
-        Task task1 = taskManager.createTask(new Task("Машина1", Status.NEW, "нужно купить машину1"));
+        Task taskFromManager = taskManager.getTaskById(task.getId());
+//        System.out.println("Get task: " + taskFromManager);
+//        System.out.println();
 
-        Task taskFromManager = taskManager.getTaskById(task1.getId());
+        Task taskUpdated = new Task(taskFromManager.getId(), "Машина", Status.DONE, "машина куплена");
+        taskManager.upDateTask(taskUpdated);
+//        System.out.println("Update task: " + taskUpdated);
+//        System.out.println();
 
-        taskFromManager.setDescription("HAVE TO BUY A NEW CAR");
-        taskManager.upDateTask(taskFromManager);
-
-        taskManager.removeTaskById(taskFromManager.getId());
+        taskManager.removeTaskById(taskUpdated.getId());
+//        System.out.println("Delete: " + task);
+//        System.out.println();
 
         Epic epic = taskManager.createEpic(new Epic("Эпик1", "описание эпика1"));
+//        System.out.println("Create epic: " + epic);
+//        System.out.println();
+
+
         SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск1 эпика1",
                 Status.DONE, "описание сабтаска1 эпика1"));
 
-        Epic epic1 = taskManager.getEpicById(epic.getId());
 
-        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
-                Status.DONE, "описание сабтаска2 эпика1"));
-
-        System.out.println(epic1.getSubTasks());
 
 
         printAllTasks(taskManager);
