@@ -36,8 +36,8 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * метод для генерации нового id
      */
-    private int idGenerator() {
-        return ++id;
+    private void idGenerator() {
+        ++id;
     }
 
     /**
@@ -89,7 +89,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task createTask(Task task) {
         // создаём id для задачи
-        task.setId(idGenerator());
+        idGenerator();
+        task.setId(this.id);
         // сохраняем новый task в хеш-таблицу
         tasks.put(this.id, task);
 
@@ -155,7 +156,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createEpic(Epic epic) {
         // создаём id для задачи
-        epic.setId(idGenerator());
+        idGenerator();
+        epic.setId(this.id);
+
         // сохраняем новый task в хеш-таблицу
         epics.put(this.id, epic);
 
@@ -206,6 +209,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
+
     // SUBTASK-методы
 
     /**
@@ -252,7 +256,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask createSubTask(SubTask subTask) {
         // создаём id для задачи
-        subTask.setId(idGenerator());
+        idGenerator();
+        subTask.setId(this.id);
+
         // сохраняем новый task в хеш-таблицу
         subTasks.put(this.id, subTask);
 
