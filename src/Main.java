@@ -12,20 +12,18 @@ public class Main {
         TaskManager taskManager = Managers.getDefault();
 
 
-        Task task = taskManager.createTask(new Task("Машина", Status.NEW, "нужно купить машину"));
+        Task task = taskManager.createTask(new Task("Задача1", Status.NEW, "описание задачи1"));
 
         Task taskFromManager = taskManager.getTaskById(task.getId());
 //        System.out.println("Get task: " + taskFromManager);
 //        System.out.println();
 
-        Task taskUpdated = new Task(taskFromManager.getId(), "Машина", Status.DONE, "машина куплена");
+        Task taskUpdated = new Task(taskFromManager.getId(), "Задача1", Status.DONE,
+                "новое описание задачи1");
         taskManager.upDateTask(taskUpdated);
 //        System.out.println("Update task: " + taskUpdated);
 //        System.out.println();
 
-        taskManager.removeTaskById(taskUpdated.getId());
-//        System.out.println("Delete: " + task);
-//        System.out.println();
 
         Epic epic = taskManager.createEpic(new Epic("Эпик1", "описание эпика1"));
 //        System.out.println("Create epic: " + epic);
@@ -38,26 +36,19 @@ public class Main {
                 Status.DONE, "описание сабтаска2 эпика1"));
 
 
-        /*taskManager.getEpicById(epic.getId());
-        taskManager.getSubTaskById(subTask.getId());
-        taskManager.getSubTaskById(subTask1.getId());
-        taskManager.getEpicById(epic.getId());
-        System.out.println();
-        System.out.println();
-        System.out.println();
-        System.out.println(taskManager.getHistory());*/
-
-
         printAllTasks(taskManager);
     }
 
 
     // метод для вывода все просмотренных задач
     private static void printAllTasks(TaskManager manager) {
-        System.out.print("Задачи:");
+        System.out.println("Задачи:");
         for (Task task : manager.getTasks()) {
             System.out.println(task);
         }
+
+        System.out.println();
+
         System.out.print("Эпики:");
         for (Task epic : manager.getEpics()) {
             System.out.println(epic);
@@ -66,12 +57,16 @@ public class Main {
                 System.out.println("--> " + subTask);
             }
         }
+
+        System.out.println();
+
         System.out.print("Подзадачи:");
         for (Task subtask : manager.getSubTasks()) {
             System.out.println(subtask);
         }
 
         System.out.println();
+
         System.out.print("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
