@@ -1,6 +1,7 @@
 package service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import model.Task;
@@ -9,6 +10,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     // список для хранения просмотренных задач
     private final List<Task> viewedT = new ArrayList<>();
+
+    // константа для установки максимального значения просмотренных задач
+    private final int maxViewedTasks;
+
+    public InMemoryHistoryManager(int maxViewed) {
+        this.maxViewedTasks = maxViewed;
+    }
 
     /**
      * метод возвращает историю просмотра задач
@@ -29,8 +37,8 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
 
-        if (viewedT.size() >= 10) {
-            viewedT.removeFirst();
+        if (viewedT.size() >= maxViewedTasks) {
+            viewedT.remove(0);
         }
 
         viewedT.add(task);

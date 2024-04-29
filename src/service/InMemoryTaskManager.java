@@ -4,20 +4,18 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
     // хеш-мап для хранения задач. Integer - для хранения id задач
-    public HashMap<Integer, Task> tasks;
+    public Map<Integer, Task> tasks;
 
     // хеш-мапа для хранения эпиков
-    private final HashMap<Integer, Epic> epics;
+    private final Map<Integer, Epic> epics;
 
     // хеш-мапа для хранения сабТасков эпика
-    private final HashMap<Integer, SubTask> subTasks;
+    private final Map<Integer, SubTask> subTasks;
 
     // класс для работы с просмотренными задачами
     private final InMemoryHistoryManager inMemoryHistoryManager;
