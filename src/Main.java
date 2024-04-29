@@ -34,9 +34,18 @@ public class Main {
 
         SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск1 эпика1",
                 Status.DONE, "описание сабтаска1 эпика1"));
+        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
+                Status.DONE, "описание сабтаска2 эпика1"));
 
 
-
+        /*taskManager.getEpicById(epic.getId());
+        taskManager.getSubTaskById(subTask.getId());
+        taskManager.getSubTaskById(subTask1.getId());
+        taskManager.getEpicById(epic.getId());
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println(taskManager.getHistory());*/
 
         printAllTasks(taskManager);
     }
@@ -44,11 +53,11 @@ public class Main {
 
     // метод для вывода все просмотренных задач
     private static void printAllTasks(TaskManager manager) {
-        System.out.println("Задачи:");
+        System.out.print("Задачи:");
         for (Task task : manager.getTasks()) {
             System.out.println(task);
         }
-        System.out.println("Эпики:");
+        System.out.print("Эпики:");
         for (Task epic : manager.getEpics()) {
             System.out.println(epic);
 
@@ -56,12 +65,13 @@ public class Main {
                 System.out.println("--> " + subTask);
             }
         }
-        System.out.println("Подзадачи:");
+        System.out.print("Подзадачи:");
         for (Task subtask : manager.getSubTasks()) {
             System.out.println(subtask);
         }
 
-        System.out.println("История:");
+        System.out.println();
+        System.out.print("История:");
         for (Task task : manager.getHistory()) {
             System.out.println(task);
         }

@@ -34,7 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         viewedT.add(task);
-        System.out.println("Задача: " + task + " добавлена в список");
+//        System.out.println("Задача: " + task + " добавлена в список");
     }
 
 
