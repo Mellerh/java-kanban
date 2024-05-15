@@ -51,7 +51,7 @@ public class InMemoryHistoryManager implements HistoryManager {
      * метод возвращает историю просмотра задач
      */
     @Override
-    public List<Task> getHist() {
+    public List<Task> getHistory() {
         List<Task> list = new ArrayList<>();
         Node current = first;
 

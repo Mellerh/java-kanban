@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DisplayName("InMemoryTaskManagerTest")
 class InMemoryTaskManagerTest {
@@ -258,12 +259,15 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    @DisplayName("Метод проверят, что после удаления эпика удалились все его подзадачи")
+    @DisplayName("Метод проверяtт, что после удаления эпика удалились все его подзадачи")
     void shouldRemovedAllSubTaskInDeletedEpic() {
+
+        assertEquals(subTask, taskManager.getSubTaskById(subTask.getId()), "неккоректное получение сабТаска");
+
         taskManager.removeEpicById(epic.getId());
 
-        assertEquals(0, taskManager.getSubTasks().size(), "неккорекнтное удаление сабтасков после " +
-                "удаление эпика");
+        assertNull(taskManager.getSubTaskById(subTask.getId()), "неккоректное удаление " +
+                "сабтасков после удаление эпика");
     }
 
     @Test

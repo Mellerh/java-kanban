@@ -8,7 +8,7 @@ public interface HistoryManager {
 
     void addViewedT(Task task);
 
-    List<Task> getHist();
+    List<Task> getHistory();
 
     void removeTaskFromViewed(int id);
 }
