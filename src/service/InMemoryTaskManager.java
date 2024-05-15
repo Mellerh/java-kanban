@@ -4,7 +4,10 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -43,10 +46,16 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getHistory() {
-        return inMemoryHistoryManager.getHist();
+        return inMemoryHistoryManager.getHistory();
     }
 
-
+    /*
+     * метод удаляет задачу из просмотренных
+     */
+    @Override
+    public void removeTaskFromViewed(int id) {
+        inMemoryHistoryManager.removeTaskFromViewed(id);
+    }
 
     // TASK-методы
 
@@ -55,10 +64,6 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Task> getTasks() {
-        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
-        /*for (Task task : tasks.values()) {
-            inMemoryHistoryManager.addViewedT(task);
-        }*/
 
         return new ArrayList<>(tasks.values());
     }
@@ -188,6 +193,17 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void removeEpicById(int id) {
+
+        Epic deletedEpic = epics.get(id);
+        List<SubTask> subTaskListInDeletedEpic = deletedEpic.getSubTasks();
+
+        // удаляем все вхождения сабТасокв в удаляемом эпике из subTasks
+        for (Integer integer : subTasks.keySet()) {
+            if (subTaskListInDeletedEpic.contains(subTasks.get(integer))) {
+                subTasks.remove(integer);
+            }
+        }
+
         epics.remove(id);
     }
 
