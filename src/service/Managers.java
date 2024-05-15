@@ -2,8 +2,8 @@ package service;
 
 public class Managers {
 
-    public static TaskManager getDefault(int maxViewedTasks) {
-        return new InMemoryTaskManager(new InMemoryHistoryManager(maxViewedTasks));
+    public static TaskManager getDefault() {
+        return new InMemoryTaskManager(new InMemoryHistoryManager());
     }
 
 }

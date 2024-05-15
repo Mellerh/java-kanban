@@ -8,7 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("InMemoryHistoryManagerTest")
 class InMemoryHistoryManagerTest {
@@ -21,7 +24,7 @@ class InMemoryHistoryManagerTest {
 
     @BeforeEach
     void init() {
-        taskManager = Managers.getDefault(10);
+        taskManager = Managers.getDefault();
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
         epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));
@@ -30,7 +33,8 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    @DisplayName("Метод проверяет корректность добавление задачи в список просмотренных")
+    @DisplayName("Метод проверяет корректность добавление задачи в список просмотренных, и если задача добавляется" +
+            "повторно, удаляет первое вхождение")
     void shouldAddViewedCorrectly() {
         taskManager.getTaskById(task.getId());
         taskManager.getEpicById(epic.getId());
@@ -38,7 +42,36 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(3, taskManager.getHistory().size(), "Неккоректное добавление просмотренных " +
                 "задач в InMemoryHistoryManager viewedT");
+
+        taskManager.getTaskById(task.getId());
+        assertEquals(3, taskManager.getHistory().size(), "Неккоректное добавление повторно " +
+                "просмотренных задач в InMemoryHistoryManager viewedT");
     }
 
+    @Test
+    @DisplayName("Метод проверяет корректный вывод всех просмотренных задч, с учётом повторно-просмотренных. " +
+            "Также метод проверяет корректность удаления задач из списка просмотренных")
+    void shouldReturnCorrectListOfViewedTasks() {
+        taskManager.getTaskById(task.getId());
+        taskManager.getEpicById(epic.getId());
+        taskManager.getSubTaskById(subTask.getId());
+
+        taskManager.getTaskById(task.getId());
+
+
+        List<Task> listOfViewedTasks = new ArrayList<>();
+        listOfViewedTasks.add(epic);
+        listOfViewedTasks.add(subTask);
+        listOfViewedTasks.add(task);
+
+        assertEquals(listOfViewedTasks, taskManager.getHistory(), "Неккоректное добавление просмотренных задач" +
+                "в список");
+
+        taskManager.removeTaskFromViewed(epic.getId());
+        listOfViewedTasks.remove(epic);
+        assertEquals(listOfViewedTasks, taskManager.getHistory(), "Неккоректное удаление просмотренных задач" +
+                "из списка");
+
+    }
 
 }

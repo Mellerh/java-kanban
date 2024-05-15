@@ -1,18 +1,16 @@
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("InMemoryTaskManagerTest")
 class InMemoryTaskManagerTest {
@@ -29,7 +27,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void init() {
-        taskManager = Managers.getDefault(10);
+        taskManager = Managers.getDefault();
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
 
@@ -259,6 +257,26 @@ class InMemoryTaskManagerTest {
         assertEquals(0, subTasks.size(), "неккоректное удаление subTasks");
     }
 
+    @Test
+    @DisplayName("Метод проверят, что после удаления эпика удалились все его подзадачи")
+    void shouldRemovedAllSubTaskInDeletedEpic() {
+        taskManager.removeEpicById(epic.getId());
+
+        assertEquals(0, taskManager.getSubTasks().size(), "неккорекнтное удаление сабтасков после " +
+                "удаление эпика");
+    }
+
+    @Test
+    @DisplayName("Метод проверяет целостность данных при изменении полей задачи")
+    void shouldUpdateListOfViewedTasksAfterSetDateIntoThem() {
+        task.setName("new name");
+        task.setDescription("new description");
+        taskManager.getTaskById(task.getId());
+
+        Task updatedTask = taskManager.getHistory().get(0);
+        assertEquals("new name", updatedTask.getName(), "Имя задачи не обновлено в истории.");
+        assertEquals("new description", updatedTask.getDescription(), "Описание задачи не обновлено в истории.");
+    }
 
     /**
      * метод создан для корректного сравнения задач

@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = Managers.getDefault(10);
+        TaskManager taskManager = Managers.getDefault();
 
 
         Task task = taskManager.createTask(new Task("Задача1", Status.NEW, "описание задачи1"));
@@ -35,8 +35,6 @@ public class Main {
         SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
                 Status.DONE, "описание сабтаска2 эпика1"));
 
-
-        printAllTasks(taskManager);
     }
 
 

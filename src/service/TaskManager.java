@@ -4,9 +4,6 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,6 +12,8 @@ import java.util.List;
 public interface TaskManager {
 
     List<Task> getHistory();
+
+    void removeTaskFromViewed(int id);
 
     List<Task> getTasks();
 
