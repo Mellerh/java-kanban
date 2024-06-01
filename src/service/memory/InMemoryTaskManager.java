@@ -18,10 +18,10 @@ public class InMemoryTaskManager implements TaskManager {
     public Map<Integer, Task> tasks;
 
     // хеш-мапа для хранения эпиков
-    private final Map<Integer, Epic> epics;
+    public final Map<Integer, Epic> epics;
 
     // хеш-мапа для хранения сабТасков эпика
-    private final Map<Integer, SubTask> subTasks;
+    public final Map<Integer, SubTask> subTasks;
 
     // класс для работы с просмотренными задачами
     private final HistoryManager inMemoryHistoryManager;
