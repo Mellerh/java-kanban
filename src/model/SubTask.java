@@ -22,7 +22,17 @@ public class SubTask extends Task {
     }
 
 
-    public int getEpicId() {
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.SubTask;
+    }
+
+
+    /**
+     * данный метод - это пример применения ООП-инкапсуляции.
+     */
+    @Override
+    public Integer getEpicId() {
         return this.epicId;
     }
 

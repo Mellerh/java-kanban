@@ -29,6 +29,20 @@ public class Task {
     }
 
 
+    /*
+     * этот метод мы переопределяем в Epic и SubTask. Подход ООП
+     */
+    public TaskType getTaskType() {
+        return TaskType.Task;
+    }
+
+    /*
+     * этот метод мы переопределяем в SubTask. Подход ООП
+     */
+    public Integer getEpicId() {
+        return null;
+    }
+
     public String getName() {
         return name;
     }
