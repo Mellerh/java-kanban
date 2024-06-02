@@ -1,12 +1,10 @@
 package Converter;
 
-import model.Task;
-
-
 /*
  * класс отвечает за конвертирование задачи в строку
+ * создал его для инкапсуляции
  */
-public class TaskConverter {
+/*public class TaskConverter {
 
     public String toString(Task task) {
 
@@ -15,4 +13,4 @@ public class TaskConverter {
 
     }
 
-}
+}*/

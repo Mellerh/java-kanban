@@ -6,7 +6,7 @@ import service.memory.InMemoryHistoryManager;
 public class Managers {
 
     public static TaskManager getDefault() {
-        return new FileBackedTaskManager(getHistoryManager());
+        return new FileBackedTaskManager(new InMemoryHistoryManager());
     }
 
     public static HistoryManager getHistoryManager() {

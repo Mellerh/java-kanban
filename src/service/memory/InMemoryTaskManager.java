@@ -45,6 +45,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     /**
+     *
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    /**
      * метод возвращает список просмотренных задач из кла из списка viewedTasks
      */
     @Override

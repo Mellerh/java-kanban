@@ -1,8 +1,6 @@
 package service.file;
 
-import Converter.TaskConverter;
 import exception.ManagerSaveException;
-import exception.NotFoundException;
 import model.*;
 import service.HistoryManager;
 import service.Managers;
@@ -15,17 +13,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final Path file;
-    TaskConverter converter = new TaskConverter();
 
     public FileBackedTaskManager(HistoryManager historyManager) {
         this(historyManager, Paths.get("resources/task.csv"));
     }
-
 
     public FileBackedTaskManager(HistoryManager inMemoryHistoryManager, Path file) {
         super(inMemoryHistoryManager);
@@ -37,22 +35,147 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
+    // Task
+    @Override
+    public List<Task> getTasks() {
+        return super.getTasks();
+    }
+
+    @Override
+    public void removeAllTasks() {
+        super.tasks.clear();
+        save();
+    }
+
+    @Override
+    public Task getTaskById(int id) {
+        return super.getTaskById(id);
+    }
+
+    @Override
+    public Task createTask(Task task) {
+        Task newTask = super.createTask(task);
+        save();
+        return newTask;
+    }
+
+    @Override
+    public void upDateTask(Task task) {
+        super.upDateTask(task);
+        save();
+    }
+
+    @Override
+    public void removeTaskById(int id) {
+        super.removeTaskById(id);
+        save();
+    }
+
+
+    // Epic
+    @Override
+    public List<Epic> getEpics() {
+        return super.getEpics();
+    }
+
+    @Override
+    public void removeAllEpics() {
+        super.removeAllEpics();
+        save();
+    }
+
+    @Override
+    public Epic getEpicById(int id) {
+        return super.getEpicById(id);
+    }
+
+    @Override
+    public Epic createEpic(Epic epic) {
+        Epic newEpic = super.createEpic(epic);
+        save();
+        return newEpic;
+    }
+
+    @Override
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
+        save();
+    }
+
+    @Override
+    public void removeEpicById(int id) {
+        super.removeEpicById(id);
+        save();
+    }
+
+    @Override
+    public List<SubTask> getAllSubTaskInEpic(Epic epic) {
+        return super.getAllSubTaskInEpic(epic);
+    }
+
+
+    // SUBTASK-методы
+    @Override
+    public List<SubTask> getSubTasks() {
+        return super.getSubTasks();
+    }
+
+    @Override
+    public void removeAllSubTasks() {
+        super.removeAllSubTasks();
+        save();
+    }
+
+    @Override
+    public SubTask getSubTaskById(int id) {
+        return super.getSubTaskById(id);
+    }
+
+    @Override
+    public SubTask createSubTask(SubTask subTask) {
+        SubTask newSubTask = super.createSubTask(subTask);
+        save();
+        return newSubTask;
+    }
+
+    @Override
+    public void updateSubTask(SubTask subTask) {
+        super.updateSubTask(subTask);
+        save();
+    }
+
+    @Override
+    public void removeSubTaskById(int id) {
+        super.removeSubTaskById(id);
+        save();
+    }
+
+
+    /**
+     * метод восстанавливает данные менеджера из файла при запуске программы
+     */
     public static FileBackedTaskManager loadFromFile(Path file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        manager.loadAndReadFromFile();
         return manager;
     }
 
-    // TODO....
-    private void loadFromFile() {
+    /**
+     * метод загружает данные из файла. используется в loadFromFile
+     */
+    private void loadAndReadFromFile() {
         int maxId = 0;
 
         try (final BufferedReader reader = Files.newBufferedReader(file)) {
 
         } catch (IOException e) {
-            throw new NotFoundException("Ошибка в файле" + file.toFile().getAbsolutePath(), );
+            throw new ManagerSaveException("Ошибка в файле" + file.toFile().getAbsolutePath(), e);
         }
     }
 
+    /**
+     * метод преобразует задачу в строку
+     */
     public String toString(Task task) {
 
         return task.getId() + "," + task.getTaskType() + "," + task.getName() + ","
@@ -60,7 +183,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     }
 
+    /**
+     * метод преобразует строку в задачу
+     */
     public Task fromString(String value) {
+
+        Task task = null;
 
         String[] valuesFromSting = value.split(",");
 
@@ -68,10 +196,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = valuesFromSting[2];
         Status status = Status.valueOf(valuesFromSting[3]);
         String description = valuesFromSting[4];
-        Integer epicId = Integer.valueOf(valuesFromSting[5]);
+
+        Integer epicId = null;
+        if (!valuesFromSting[5].equals("null")) {
+            epicId = Integer.valueOf(valuesFromSting[5]);
+        }
 
         TaskType taskType = TaskType.valueOf(valuesFromSting[1]);
-        Task task = null;
+
         switch (taskType) {
             case TaskType.Task:
                 task = new Task(id, name, status, description);
@@ -90,25 +222,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    /*
+    /**
      * метод сохраняет задачи, эпики, подзадачи в файл
      */
     public void save() {
 
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
 
+            writer.append("id,type,name,status,description,epic");
+            writer.newLine();
+
             for (Map.Entry<Integer, Task> entry : tasks.entrySet()) {
-                writer.append(converter.toString(entry.getValue()));
+                writer.append(toString(entry.getValue()));
                 writer.newLine();
             }
 
             for (Map.Entry<Integer, Epic> entry : epics.entrySet()) {
-                writer.append(converter.toString(entry.getValue()));
+                writer.append(toString(entry.getValue()));
                 writer.newLine();
             }
 
             for (Map.Entry<Integer, SubTask> entry : subTasks.entrySet()) {
-                writer.append(converter.toString(entry.getValue()));
+                writer.append(toString(entry.getValue()));
                 writer.newLine();
             }
 
