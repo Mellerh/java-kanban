@@ -29,12 +29,16 @@ public class Main {
 
         SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск1 эпика1",
                 Status.DONE, "описание сабтаска1 эпика1"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
-                Status.DONE, "описание сабтаска2 эпика1"));
 
 
         TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
-        taskManagerLoader.getSubTasks();
+        System.out.println("taskManagerLoader:");
+        System.out.println(taskManagerLoader.getTasks());
+        System.out.println(taskManagerLoader.getEpics());
+        System.out.println(taskManagerLoader.getSubTasks());
+
+        System.out.println(taskManagerLoader.getId());
+
 
     }
 

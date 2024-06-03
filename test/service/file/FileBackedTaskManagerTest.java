@@ -37,49 +37,39 @@ class FileBackedTaskManagerTest {
     @BeforeEach
     void init() {
 
+        taskManager = Managers.getDefault();
+        fileBackedTaskManager = new FileBackedTaskManager(Managers.getHistoryManager());
+
+        task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
+        epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));
+        subTask = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1", Status.NEW,
+                "descriptionSubTask1Epic1"));
+
+
+        // создаём файл и добавляем в него данные
         try {
-            taskManager = Managers.getDefault();
-            FileBackedTaskManager fileBackedTaskManager = (FileBackedTaskManager) taskManager;
-
-            task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
-            epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));
-            subTask = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1", Status.NEW,
-                    "descriptionSubTask1Epic1"));
-
-
-            // создаём файл и добавляем в него данные
             tempFile = Files.createTempFile("task", ".csv");
-
-            try (BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
-                writer.append("id,type,name,status,description,epic");
-                writer.newLine();
-
-                writer.append(fileBackedTaskManager.toString(task));
-                writer.newLine();
-                writer.append(fileBackedTaskManager.toString(epic));
-                writer.newLine();
-                writer.append(fileBackedTaskManager.toString(subTask));
-                writer.newLine();
-
-            } catch (IOException e) {
-                throw new RuntimeException("Ошибка в файле: " + tempFile.getFileName(), e);
-            }
-
-            // создаём новый менеджер, передав в него задачи из временного файла
-            taskManagerLoader = FileBackedTaskManager.loadFromFile(tempFile);
-
-            List<String> fileContent = Files.readAllLines(tempFile);
-            System.out.println("Файл создан с содержимым:");
-            fileContent.forEach(System.out::println);
-
-            System.out.println(taskManagerLoader.getSubTasks());
-            System.out.println(taskManager.getSubTasks());
-
-
         } catch (IOException e) {
             throw new RuntimeException("Ошибка при создании временного файла", e);
         }
 
+        try (BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
+            writer.append("id,type,name,status,description,epic");
+            writer.newLine();
+
+            writer.append(fileBackedTaskManager.toString(task));
+            writer.newLine();
+            writer.append(fileBackedTaskManager.toString(epic));
+            writer.newLine();
+            writer.append(fileBackedTaskManager.toString(subTask));
+            writer.newLine();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка в файле: " + tempFile.getFileName(), e);
+        }
+
+        // создаём новый менеджер, передав в него задачи из временного файла
+        taskManagerLoader = FileBackedTaskManager.loadFromFile(tempFile);
 
     }
 
@@ -91,25 +81,33 @@ class FileBackedTaskManagerTest {
 
         assertEqualsListOfTasks(taskManagerLoader.getTasks(), taskManager.getTasks());
         assertEqualsListOfTasks(taskManagerLoader.getEpics(), taskManager.getEpics());
-//        assertEqualsListOfTasks(taskManagerLoader.getSubTasks(), taskManager.getSubTasks());
+        assertEqualsListOfTasks(taskManagerLoader.getSubTasks(), taskManager.getSubTasks());
 
-        /*System.out.println(taskManagerLoader.getSubTasks());
-        System.out.println(taskManager.getSubTasks());*/
     }
 
-    @DisplayName("Тест проверяет корректную загрузку данных из файла")
+    @DisplayName("Тест проверяет корректное преобразование задачи в строку")
     @Test
     void shouldConvertTasksToString() {
+        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null";
+        String convertedSubTaskToLine = "3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2";
+
+        assertEquals(convertedTaskToLine, fileBackedTaskManager.toString(task), "toString неккоректно " +
+                "конвертирует Task в строку");
+        assertEquals(convertedSubTaskToLine, fileBackedTaskManager.toString(subTask), "toString неккоректно " +
+                "конвертирует subTask в строку");
+
     }
 
-    @DisplayName("Тест проверяет корректную загрузку данных из файла")
+    @DisplayName("Тест проверяет корректное преорбразование строки в файл")
     @Test
     void shouldConvertTasksFromString() {
-    }
 
-    @DisplayName("Тест проверяет корректное сохранение данных в файл")
-    @Test
-    void shouldSaveTasksCorrectlyToFile() {
+        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null";
+        Task convertedTaskFromLine = fileBackedTaskManager.fromString(convertedTaskToLine);
+
+        assertEqualsTask(task, convertedTaskFromLine, "fromString неккоректно преобразовывает " +
+                "строку в задачу");
+
     }
 
 
@@ -126,5 +124,13 @@ class FileBackedTaskManagerTest {
                     "не совпадают");
         }
 
+    }
+
+    /**
+     * метод создан для корректного сравнения задач
+     */
+    private static void assertEqualsTask(Task expectedTask, Task actualTask, String description) {
+        assertEquals(expectedTask.getId(), actualTask.getId(), description + " id");
+        assertEquals(expectedTask.getName(), actualTask.getName(), description + " name");
     }
 }
