@@ -1,4 +1,4 @@
-package service;
+package service.memory;
 
 import model.Epic;
 import model.Status;
@@ -7,6 +7,8 @@ import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import service.Managers;
+import service.TaskManager;
 
 import java.util.List;
 

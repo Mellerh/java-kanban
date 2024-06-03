@@ -98,6 +98,7 @@ public class Task {
         return "\nname: " + name + "\n"
                 + "status: " + status + "\n"
                 + "description: " + description + "\n"
-                + "id: " + id;
+                + "id: " + id + "\n"
+                + "epicId: " + getEpicId();
     }
 }

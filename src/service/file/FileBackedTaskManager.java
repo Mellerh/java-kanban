@@ -165,8 +165,41 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      */
     private void loadAndReadFromFile() {
         int maxId = 0;
+        String line;
 
         try (final BufferedReader reader = Files.newBufferedReader(file)) {
+
+            reader.readLine();
+
+            while (reader.ready()) {
+                line = reader.readLine();
+                Task task = fromString(line);
+
+                int id = task.getId();
+
+                // Добавляем Task
+                if (task.getTaskType() == TaskType.Task) {
+                    tasks.put(task.getId(), task);
+                }
+
+                // Добавляем Epic
+                if (task.getTaskType() == TaskType.Epic) {
+                    epics.put(task.getId(), (Epic) task);
+                }
+
+                // Добавляем SubTask
+                if (task.getTaskType() == TaskType.SubTask) {
+                    subTasks.put(task.getId(), (SubTask) task);
+                }
+
+                if (maxId < id) {
+                    maxId = id;
+                }
+            }
+
+            // Сохраняем максимальный ID задач
+            super.setId(maxId); // Вызов метода суперкласса
+            setId(maxId); // Вызов метода текущего класса
 
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка в файле" + file.toFile().getAbsolutePath(), e);

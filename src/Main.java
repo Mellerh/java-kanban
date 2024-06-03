@@ -34,6 +34,7 @@ public class Main {
 
 
         TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
+        taskManagerLoader.getSubTasks();
 
     }
 

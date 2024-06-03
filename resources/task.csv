@@ -1,7 +1,4 @@
 id,type,name,status,description,epic
-1,Task,Задача1,DONE,новое описание задачи1,null
-2,Epic,Эпик1,DONE,описание эпика1,null
-3,Epic,Эпик2,NEW,описание эпика2,null
-4,Epic,Эпик3,NEW,описание эпика3,null
-5,SubTask,сабтаск1 эпика1,DONE,описание сабтаска1 эпика1,2
-6,SubTask,сабтаск2 эпика1,DONE,описание сабтаска2 эпика1,2
+1,Task,task1,NEW,descriptionTask1,null
+2,Epic,epic1,NEW,descriptionEpic1,null
+3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2

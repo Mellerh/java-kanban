@@ -11,6 +11,8 @@ import java.util.List;
  */
 public interface TaskManager {
 
+    int getId();
+
     List<Task> getHistory();
 
     void removeTaskFromViewed(int id);
