@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import service.Managers;
 import service.TaskManager;
+import service.memory.InMemoryHistoryManager;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -38,7 +39,7 @@ class FileBackedTaskManagerTest {
     void init() {
 
         taskManager = Managers.getDefault();
-        fileBackedTaskManager = new FileBackedTaskManager(Managers.getHistoryManager());
+        fileBackedTaskManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
         epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));

@@ -15,13 +15,13 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
 
     // хеш-мап для хранения задач. Integer - для хранения id задач
-    public Map<Integer, Task> tasks;
+    protected Map<Integer, Task> tasks;
 
     // хеш-мапа для хранения эпиков
-    public final Map<Integer, Epic> epics;
+    protected final Map<Integer, Epic> epics;
 
     // хеш-мапа для хранения сабТасков эпика
-    public final Map<Integer, SubTask> subTasks;
+    protected final Map<Integer, SubTask> subTasks;
 
     // класс для работы с просмотренными задачами
     private final HistoryManager inMemoryHistoryManager;

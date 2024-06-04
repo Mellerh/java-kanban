@@ -1,9 +1,10 @@
 package service.file;
 
+import exception.ManagerLoadException;
 import exception.ManagerSaveException;
 import model.*;
 import service.HistoryManager;
-import service.Managers;
+import service.memory.InMemoryHistoryManager;
 import service.memory.InMemoryTaskManager;
 
 import java.io.BufferedReader;
@@ -25,13 +26,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this(historyManager, Paths.get("resources/task.csv"));
     }
 
-    public FileBackedTaskManager(HistoryManager inMemoryHistoryManager, Path file) {
+    private FileBackedTaskManager(HistoryManager inMemoryHistoryManager, Path file) {
         super(inMemoryHistoryManager);
         this.file = file;
     }
 
-    public FileBackedTaskManager(Path file) {
-        this(Managers.getHistoryManager(), file);
+    private FileBackedTaskManager(Path file) {
+        this(new InMemoryHistoryManager(), file);
     }
 
 
@@ -202,7 +203,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             setId(maxId); // Вызов метода текущего класса
 
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка в файле" + file.toFile().getAbsolutePath(), e);
+            throw new ManagerLoadException("Ошибка в файле" + file.toFile().getAbsolutePath(), e);
         }
     }
 
