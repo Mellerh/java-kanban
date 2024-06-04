@@ -1,8 +1,11 @@
-package service;
+package service.memory;
 
+import exception.NotFoundException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
+import service.HistoryManager;
+import service.TaskManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,22 +15,22 @@ import java.util.Map;
 public class InMemoryTaskManager implements TaskManager {
 
     // хеш-мап для хранения задач. Integer - для хранения id задач
-    public Map<Integer, Task> tasks;
+    protected Map<Integer, Task> tasks;
 
     // хеш-мапа для хранения эпиков
-    private final Map<Integer, Epic> epics;
+    protected final Map<Integer, Epic> epics;
 
     // хеш-мапа для хранения сабТасков эпика
-    private final Map<Integer, SubTask> subTasks;
+    protected final Map<Integer, SubTask> subTasks;
 
     // класс для работы с просмотренными задачами
-    private final InMemoryHistoryManager inMemoryHistoryManager;
+    private final HistoryManager inMemoryHistoryManager;
 
     // глобальный id-генератор для задач
     private int id = 0;
 
 
-    public InMemoryTaskManager(InMemoryHistoryManager inMemoryHistoryManager) {
+    public InMemoryTaskManager(HistoryManager inMemoryHistoryManager) {
         this.inMemoryHistoryManager = inMemoryHistoryManager;
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
@@ -40,6 +43,16 @@ public class InMemoryTaskManager implements TaskManager {
     private void idGenerator() {
         ++id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public int getId() {
+        return this.id;
+    }
+
 
     /**
      * метод возвращает список просмотренных задач из кла из списка viewedTasks
@@ -126,10 +139,6 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<Epic> getEpics() {
-        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
-        /*for (Epic epic : epics.values()) {
-            inMemoryHistoryManager.addViewedT(epic);
-        }*/
 
         return new ArrayList<>(epics.values());
     }
@@ -180,7 +189,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         // проверяем, что epic нашёлся
         if (savedEpic == null) {
-            return;
+            throw new NotFoundException("Не найден эпик: " + epic);
         }
 
         // в Epic реализована выборочная перезапись полей, так как полный апдейт эпика сотрёт все субтаски
@@ -214,11 +223,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<SubTask> getAllSubTaskInEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
 
-        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
-        /*for (SubTask subTask : savedEpic.getSubTasks()) {
-            inMemoryHistoryManager.addViewedT(subTask);
-        }*/
-
         return savedEpic.getSubTasks();
     }
 
@@ -231,10 +235,6 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public List<SubTask> getSubTasks() {
-        // этот код написан на всякий случай, если getAll подразумевает добавление всех задач в просмотренные
-        /*for (SubTask subTask : subTasks.values()) {
-            inMemoryHistoryManager.addViewedT(subTask);
-        }*/
 
         return new ArrayList<>(subTasks.values());
     }
@@ -291,6 +291,10 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.put(subTask.getId(), subTask);
 
         Epic epic = epics.get(subTask.getEpicId());
+        if (epic == null) {
+            throw new NotFoundException("Не найден эпик с id " + subTask.getEpicId());
+        }
+
         epic.updateSubTask(subTask);
     }
 

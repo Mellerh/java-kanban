@@ -16,6 +16,14 @@ public class Epic extends Task {
         super(name, status, description);
     }
 
+    public Epic(Integer id, String name, Status status, String description) {
+        super(id, name, status, description);
+    }
+
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.Epic;
+    }
 
     public List<SubTask> getSubTasks() {
         return subTasks;
@@ -41,9 +49,6 @@ public class Epic extends Task {
      */
     public void updateSubTask(SubTask subTask) {
 
-        /* не очень понял замечения.
-        Вы написали, что по сути я задублировал одно и то же действие на апдейт субтаска?
-        В первой версии я закомментил этот цикл для уточнения, какой из вариантов лучше. Через equals или contains */
         for (int i = 0; i < subTasks.size(); i++) {
             if (subTasks.get(i).equals(subTask)) {
                 subTasks.set(i, subTask);

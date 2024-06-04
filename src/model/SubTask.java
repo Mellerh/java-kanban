@@ -15,14 +15,24 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-    public SubTask(int epicId, int id, String name, Status status, String description) {
-        super(name, status, description);
+    public SubTask(int id, String name, Status status, String description, int epicId) {
+        super(id, name, status, description);
         this.epicId = epicId;
 
     }
 
 
-    public int getEpicId() {
+    @Override
+    public TaskType getTaskType() {
+        return TaskType.SubTask;
+    }
+
+
+    /**
+     * данный метод - это пример применения ООП-инкапсуляции.
+     */
+    @Override
+    public Integer getEpicId() {
         return this.epicId;
     }
 

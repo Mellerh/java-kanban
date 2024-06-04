@@ -4,6 +4,9 @@ import model.SubTask;
 import model.Task;
 import service.Managers;
 import service.TaskManager;
+import service.file.FileBackedTaskManager;
+
+import java.nio.file.Paths;
 
 public class Main {
 
@@ -15,25 +18,27 @@ public class Main {
         Task task = taskManager.createTask(new Task("Задача1", Status.NEW, "описание задачи1"));
 
         Task taskFromManager = taskManager.getTaskById(task.getId());
-//        System.out.println("Get task: " + taskFromManager);
-//        System.out.println();
 
         Task taskUpdated = new Task(taskFromManager.getId(), "Задача1", Status.DONE,
                 "новое описание задачи1");
         taskManager.upDateTask(taskUpdated);
-//        System.out.println("Update task: " + taskUpdated);
-//        System.out.println();
 
 
         Epic epic = taskManager.createEpic(new Epic("Эпик1", "описание эпика1"));
-//        System.out.println("Create epic: " + epic);
-//        System.out.println();
 
 
         SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск1 эпика1",
                 Status.DONE, "описание сабтаска1 эпика1"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
-                Status.DONE, "описание сабтаска2 эпика1"));
+
+
+        TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
+        System.out.println("taskManagerLoader:");
+        System.out.println(taskManagerLoader.getTasks());
+        System.out.println(taskManagerLoader.getEpics());
+        System.out.println(taskManagerLoader.getSubTasks());
+
+        System.out.println(taskManagerLoader.getId());
+
 
     }
 

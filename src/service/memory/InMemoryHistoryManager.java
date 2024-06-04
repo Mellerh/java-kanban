@@ -1,6 +1,7 @@
-package service;
+package service.memory;
 
 import model.Task;
+import service.HistoryManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     /**
      * метод добавляет просмотренную задачу в список viewedTasks
-     * также метод проверяет заполненность списка и удаляет первый элемент
      */
     @Override
     public void addViewedT(Task task) {
