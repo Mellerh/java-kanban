@@ -94,9 +94,14 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public Task getTaskById(int id) {
+        Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException("Задача с id " + id + " не найдена");
+        }
+
         inMemoryHistoryManager.addViewedT(tasks.get(id));
 
-        return tasks.get(id);
+        return task;
     }
 
     /**
