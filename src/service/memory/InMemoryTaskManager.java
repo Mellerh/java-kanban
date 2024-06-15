@@ -7,10 +7,7 @@ import model.Task;
 import service.HistoryManager;
 import service.TaskManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -29,12 +26,17 @@ public class InMemoryTaskManager implements TaskManager {
     // глобальный id-генератор для задач
     private int id = 0;
 
+    // поле для хранение отсортированного списка задач и подЗадач по их приоритету (времени начала startTime)
+    Set<Task> prioritizedTasks;
+
 
     public InMemoryTaskManager(HistoryManager inMemoryHistoryManager) {
         this.inMemoryHistoryManager = inMemoryHistoryManager;
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
+        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
     }
 
     /**
@@ -55,6 +57,24 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     /**
+     * метод возвращает отсортированный списк задач и подЗадач по их приоритету
+     */
+    public Set<Task> getPrioritizedTasks() {
+        return this.prioritizedTasks;
+    }
+
+    /**
+     * компоратор для сортироваки задач и подЗадач по их приоритету
+     * компортатор передаётся в prioritizedTasks при создании
+     */
+    Comparator<Task> comparatorForPrioritizedTasks = new Comparator<>() {
+        @Override
+        public int compare(Task t1, Task t2) {
+
+        }
+    }
+
+    /**
      * метод возвращает список просмотренных задач из кла из списка viewedTasks
      */
     @Override
@@ -62,7 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
         return inMemoryHistoryManager.getHistory();
     }
 
-    /*
+    /**
      * метод удаляет задачу из просмотренных
      */
     @Override
@@ -124,6 +144,19 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void upDateTask(Task task) {
+
+        Task originalTask = tasks.get(task.getId());
+        if (originalTask == null) {
+            throw new NotFoundException("Task с id-" + task.getId() + "не найдена");
+        }
+
+
+
+
+
+
+
+
         tasks.put(task.getId(), task);
     }
 

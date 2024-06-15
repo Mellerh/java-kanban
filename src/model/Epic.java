@@ -18,8 +18,8 @@ public class Epic extends Task {
         super(name, status, description);
     }
 
-    public Epic(Integer id, String name, Status status, String description, LocalDateTime startTime, long duration) {
-        super(id, name, status, description, startTime, duration);
+    public Epic(Integer id, String name, Status status, String description) {
+        super(id, name, status, description);
     }
 
 

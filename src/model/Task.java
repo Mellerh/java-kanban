@@ -49,6 +49,9 @@ public class Task {
         this.endTime = startTime.plus(duration);
     }
 
+    public Task(Integer id, String name, Status status, String description) {
+    }
+
 
     /**
      * этот метод мы переопределяем в Epic и SubTask. Подход ООП
