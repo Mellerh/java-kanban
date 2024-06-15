@@ -1,4 +1,4 @@
-id,type,name,status,description,epic
-1,Task,task1,NEW,descriptionTask1,null
-2,Epic,epic1,NEW,descriptionEpic1,null
-3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2
+id,type,name,status,description,epic,duration,startTime
+1,Task,task1,NEW,descriptionTask1,null,15,2024-06-15T20:34:56.539553
+2,Epic,epic1,NEW,descriptionEpic1,null,15,2024-06-15T20:34:56.542003
+3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2,15,2024-06-15T20:34:56.542003

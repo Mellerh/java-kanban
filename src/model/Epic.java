@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +18,10 @@ public class Epic extends Task {
         super(name, status, description);
     }
 
-    public Epic(Integer id, String name, Status status, String description) {
-        super(id, name, status, description);
+    public Epic(Integer id, String name, Status status, String description, LocalDateTime startTime, long duration) {
+        super(id, name, status, description, startTime, duration);
     }
+
 
     @Override
     public TaskType getTaskType() {
@@ -73,12 +76,33 @@ public class Epic extends Task {
 
         Status statusOfSubTasks = subTasks.getFirst().getStatus();
 
+        // поля для расчёта времени начала, продолжительности и окончания эпика
+        LocalDateTime startTimeOfSubTasks = subTasks.getFirst().getStartTime();
+        long durationOfSubTasks = 0;
+
+        LocalDateTime endTimeOfSubTasks = subTasks.getFirst().getEndTime();
+
         for (SubTask subTask : subTasks) {
+
+            // устанавливаем Status для Epic
             if (subTask.getStatus() != statusOfSubTasks) {
                 isDifferentStatus = true;
-                break;
             }
+
+            // если время начала эпика
+            if (getStartTime().isBefore(startTimeOfSubTasks)) {
+                setStartTime(subTask.getStartTime());
+            }
+
+            if (subTask.getEndTime().isAfter(endTimeOfSubTasks)) {
+                setEndTime(subTask.getEndTime());
+            }
+
+            durationOfSubTasks = durationOfSubTasks + subTask.getDuration().toMinutes();
+
         }
+
+        setDuration(Duration.ofMinutes(durationOfSubTasks));
 
         if (isDifferentStatus) {
             this.setStatus(Status.IN_PROGRESS);

@@ -1,5 +1,7 @@
 package model;
 
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
 
     // id эпика, в котором хранится этот subTask
@@ -15,8 +17,9 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-    public SubTask(int id, String name, Status status, String description, int epicId) {
-        super(id, name, status, description);
+    public SubTask(int id, String name, Status status, String description, int epicId, LocalDateTime startTime,
+                   long duration) {
+        super(id, name, status, description, startTime, duration);
         this.epicId = epicId;
 
     }

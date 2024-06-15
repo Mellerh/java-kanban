@@ -1,5 +1,7 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
@@ -10,22 +12,41 @@ public class Task {
     private int id;
 
 
-    public Task(int id, String name, Status status, String description) {
+    private LocalDateTime startTime;
+    private Duration duration;
+    private LocalDateTime endTime;
+
+
+    public Task(int id, String name, Status status, String description, LocalDateTime startTime, long duration) {
         this.id = id;
         this.name = name;
         this.status = status;
         this.description = description;
+
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
+        this.endTime = startTime.plusMinutes(duration);
+
     }
 
     public Task(String name, Status status, String description) {
         this.name = name;
         this.status = status;
         this.description = description;
+
+        this.startTime = LocalDateTime.now();
+        this.duration = Duration.ofMinutes(15);
+        this.endTime = startTime.plus(duration);
+
     }
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+
+        this.startTime = LocalDateTime.now();
+        this.duration = Duration.ofMinutes(15);
+        this.endTime = startTime.plus(duration);
     }
 
 
@@ -42,6 +63,33 @@ public class Task {
     public Integer getEpicId() {
         return null;
     }
+
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+
 
     public String getName() {
         return name;

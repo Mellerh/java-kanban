@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -213,7 +214,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public String toString(Task task) {
 
         return task.getId() + "," + task.getTaskType() + "," + task.getName() + ","
-                + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId();
+                + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId() + ","
+                + task.getDuration().toMinutes() + "," + task.getStartTime();
 
     }
 
@@ -231,6 +233,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(valuesFromSting[3]);
         String description = valuesFromSting[4];
 
+        // парсим строку в число
+        long duration = Integer.parseInt(valuesFromSting[6]);
+        LocalDateTime startTime = LocalDateTime.parse(valuesFromSting[7]);
+
+
         Integer epicId = null;
         if (!valuesFromSting[5].equals("null")) {
             epicId = Integer.valueOf(valuesFromSting[5]);
@@ -240,15 +247,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         switch (taskType) {
             case TaskType.Task:
-                task = new Task(id, name, status, description);
+                task = new Task(id, name, status, description, startTime, duration);
                 break;
 
             case TaskType.Epic:
-                task = new Epic(id, name, status, description);
+                task = new Epic(id, name, status, description, startTime, duration);
                 break;
 
             case TaskType.SubTask:
-                task = new SubTask(id, name, status, description, epicId);
+                task = new SubTask(id, name, status, description, epicId, startTime, duration);
                 break;
         }
 
@@ -263,7 +270,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
 
-            writer.append("id,type,name,status,description,epic");
+            writer.append("id,type,name,status,description,epic,duration,startTime");
             writer.newLine();
 
             for (Map.Entry<Integer, Task> entry : tasks.entrySet()) {

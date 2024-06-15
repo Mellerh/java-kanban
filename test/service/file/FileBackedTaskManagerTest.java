@@ -55,7 +55,7 @@ class FileBackedTaskManagerTest {
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
-            writer.append("id,type,name,status,description,epic");
+            writer.append("id,type,name,status,description,epic,duration,startTime");
             writer.newLine();
 
             writer.append(fileBackedTaskManager.toString(task));
@@ -89,8 +89,10 @@ class FileBackedTaskManagerTest {
     @DisplayName("Тест проверяет корректное преобразование задачи в строку")
     @Test
     void shouldConvertTasksToString() {
-        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null";
-        String convertedSubTaskToLine = "3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2";
+
+        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null,15," + task.getStartTime();
+        String convertedSubTaskToLine = "3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2,15,"
+                + subTask.getStartTime();
 
         assertEquals(convertedTaskToLine, fileBackedTaskManager.toString(task), "toString неккоректно " +
                 "конвертирует Task в строку");
@@ -103,7 +105,7 @@ class FileBackedTaskManagerTest {
     @Test
     void shouldConvertTasksFromString() {
 
-        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null";
+        String convertedTaskToLine = "1,Task,task1,NEW,descriptionTask1,null,15," + task.getStartTime();
         Task convertedTaskFromLine = fileBackedTaskManager.fromString(convertedTaskToLine);
 
         assertEqualsTask(task, convertedTaskFromLine, "fromString неккоректно преобразовывает " +
