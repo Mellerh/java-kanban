@@ -13,6 +13,8 @@ public interface TaskManager {
 
     int getId();
 
+    List<Task> getPrioritizedTasks();
+
     List<Task> getHistory();
 
     void removeTaskFromViewed(int id);

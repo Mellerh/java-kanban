@@ -17,13 +17,17 @@ public class SubTask extends Task {
         this.epicId = epicId;
     }
 
-    public SubTask(int id, String name, Status status, String description, int epicId, LocalDateTime startTime,
-                   long duration) {
-        super(id, name, status, description, startTime, duration);
+    public SubTask(int id, String name, Status status, String description, int epicId, LocalDateTime localDateTime,
+                   Long l) {
+        super(id, name, status, description, localDateTime, l);
         this.epicId = epicId;
-
     }
 
+    public SubTask(int epicId, String name, Status status, String description, LocalDateTime localDateTime,
+                   Long duration) {
+        super(name, status, description, localDateTime, duration);
+        this.epicId = epicId;
+    }
 
     @Override
     public TaskType getTaskType() {

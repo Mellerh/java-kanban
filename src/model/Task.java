@@ -2,6 +2,7 @@ package model;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -14,18 +15,18 @@ public class Task {
 
     private LocalDateTime startTime;
     private Duration duration;
-    private LocalDateTime endTime;
+    protected LocalDateTime endTime;
 
 
-    public Task(int id, String name, Status status, String description, LocalDateTime startTime, long duration) {
+    public Task(int id, String name, Status status, String description, LocalDateTime startTime, Long duration) {
         this.id = id;
         this.name = name;
         this.status = status;
         this.description = description;
 
         this.startTime = startTime;
-        this.duration = Duration.ofMinutes(duration);
-        this.endTime = startTime.plusMinutes(duration);
+        this.duration = duration == null ? null : Duration.ofMinutes(duration);
+        this.endTime = duration == null ? null : startTime.plusMinutes(duration);
 
     }
 
@@ -34,9 +35,21 @@ public class Task {
         this.status = status;
         this.description = description;
 
-        this.startTime = LocalDateTime.now();
-        this.duration = Duration.ofMinutes(15);
-        this.endTime = startTime.plus(duration);
+        this.startTime = null;
+        this.duration = null;
+        this.endTime = null;
+
+    }
+
+    // для SubTask с startTime и duration
+    public Task(String name, Status status, String description, LocalDateTime startTime, Long duration) {
+        this.name = name;
+        this.status = status;
+        this.description = description;
+
+        this.startTime = startTime;
+        this.duration = duration == null ? null : Duration.ofMinutes(duration);
+        this.endTime = duration == null ? null : startTime.plusMinutes(duration);
 
     }
 
@@ -44,9 +57,9 @@ public class Task {
         this.name = name;
         this.description = description;
 
-        this.startTime = LocalDateTime.now();
-        this.duration = Duration.ofMinutes(15);
-        this.endTime = startTime.plus(duration);
+        this.startTime = null;
+        this.duration = null;
+        this.endTime = null;
     }
 
     public Task(Integer id, String name, Status status, String description) {
@@ -74,24 +87,33 @@ public class Task {
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
+        if (this.startTime != null && this.duration != null) {
+            this.endTime = this.startTime.plus(this.duration);
+        } else {
+            this.endTime = null;
+        }
+
     }
 
     public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration;
+    public void setDuration(Long duration) {
+        if (duration != null) {
+            this.duration = Duration.ofMinutes(duration);
+            if (this.startTime != null) {
+                this.endTime = this.startTime.plus(this.duration);
+            }
+        } else {
+            this.duration = null;
+            this.endTime = null;
+        }
     }
 
     public LocalDateTime getEndTime() {
         return endTime;
     }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
 
 
     public String getName() {
@@ -146,10 +168,15 @@ public class Task {
 
     @Override
     public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+
         return "\nname: " + name + "\n"
                 + "status: " + status + "\n"
                 + "description: " + description + "\n"
                 + "id: " + id + "\n"
-                + "epicId: " + getEpicId();
+                + "epicId: " + getEpicId() + "\n"
+                + "startTime: " + (getStartTime() == null ? "null" : getStartTime().format(formatter)) + "\n"
+                + "duration: " + (getDuration() == null ? "null" : getDuration().toMinutes()) + "\n"
+                + "endTime: " + (getEndTime() == null ? "null" : getEndTime().format(formatter));
     }
 }

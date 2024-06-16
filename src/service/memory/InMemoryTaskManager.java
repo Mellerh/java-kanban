@@ -1,6 +1,7 @@
 package service.memory;
 
 import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -37,6 +38,8 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasks = new HashMap<>();
         this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
                 Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
+
+//        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     /**
@@ -57,22 +60,35 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     /**
-     * метод возвращает отсортированный списк задач и подЗадач по их приоритету
+     * метод возвращает отсортированный списк задач и подЗадач по их приоритету. приоритет = ранее начало выполнения
      */
-    public Set<Task> getPrioritizedTasks() {
-        return this.prioritizedTasks;
+    @Override
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(this.prioritizedTasks);
     }
 
     /**
-     * компоратор для сортироваки задач и подЗадач по их приоритету
-     * компортатор передаётся в prioritizedTasks при создании
+     * метод сравнивает пересечение задач
      */
-    Comparator<Task> comparatorForPrioritizedTasks = new Comparator<>() {
-        @Override
-        public int compare(Task t1, Task t2) {
+    private void checkTaskTime(Task task) {
+
+        for (Task t : getPrioritizedTasks()) {
+            // исключаем сравнение задачи с самой собой
+            if (task.getId() == t.getId()) {
+                continue;
+            }
+
+            // если какой-то из участов пересекаются, выбрасываем исключение
+            if ((task.getStartTime().isBefore(t.getEndTime()) && task.getEndTime().isAfter(t.getStartTime())) ||
+                    (t.getStartTime().isBefore(task.getEndTime()) && t.getEndTime().isAfter(task.getStartTime()))) {
+
+                throw new ValidationException("Задача " + task.getName() + " пересекается с задачей " + t.getName());
+
+            }
 
         }
     }
+
 
     /**
      * метод возвращает список просмотренных задач из кла из списка viewedTasks
@@ -132,6 +148,14 @@ public class InMemoryTaskManager implements TaskManager {
         // создаём id для задачи
         idGenerator();
         task.setId(this.id);
+
+        // для корретного добавления задач в prioritizedTasks проверяем startTime
+        if (task.getStartTime() != null) {
+            // проверяем, не пересекается ли по времени новая задача с уже существующими
+            checkTaskTime(task);
+            prioritizedTasks.add(task);
+        }
+
         // сохраняем новый task в хеш-таблицу
         tasks.put(this.id, task);
 
@@ -150,12 +174,13 @@ public class InMemoryTaskManager implements TaskManager {
             throw new NotFoundException("Task с id-" + task.getId() + "не найдена");
         }
 
+        if (task.getStartTime() != null) {
+            // проверяем пересечение с другими задачами. если задачи пересекаются, выбрасываем исключение
+            checkTaskTime(originalTask);
 
-
-
-
-
-
+            prioritizedTasks.remove(originalTask);
+            prioritizedTasks.add(task);
+        }
 
         tasks.put(task.getId(), task);
     }
@@ -311,6 +336,12 @@ public class InMemoryTaskManager implements TaskManager {
         idGenerator();
         subTask.setId(this.id);
 
+        if (subTask.getStartTime() != null) {
+            // проверяем пересечение с другими сабТасками. если сабТаски пересекаются, выбрасываем исключение
+            checkTaskTime(subTask);
+            prioritizedTasks.add(subTask);
+        }
+
         // сохраняем новый task в хеш-таблицу
         subTasks.put(this.id, subTask);
 
@@ -319,6 +350,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTask(subTask);
         // возврат объекта нужен для frontEnd
         return subTask;
+
     }
 
     /**
@@ -326,11 +358,25 @@ public class InMemoryTaskManager implements TaskManager {
      */
     @Override
     public void updateSubTask(SubTask subTask) {
+
+        SubTask originalSubTask = subTasks.get(subTask.getId());
+        if (originalSubTask == null) {
+            throw new NotFoundException("subTask с id-" + subTask.getId() + "не найдена");
+        }
+
+        if (subTask.getStartTime() != null) {
+            // проверяем пересечение с другими задачами. если задачи пересекаются, выбрасываем исключение
+            checkTaskTime(originalSubTask);
+            prioritizedTasks.remove(originalSubTask);
+            prioritizedTasks.add(subTask);
+        }
+
+
         subTasks.put(subTask.getId(), subTask);
 
         Epic epic = epics.get(subTask.getEpicId());
         if (epic == null) {
-            throw new NotFoundException("Не найден эпик с id " + subTask.getEpicId());
+            throw new NotFoundException("Не найден Epic с id " + subTask.getEpicId());
         }
 
         epic.updateSubTask(subTask);

@@ -1,6 +1,5 @@
 package model;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,11 @@ public class Epic extends Task {
 
     public Epic(Integer id, String name, Status status, String description) {
         super(id, name, status, description);
+    }
+
+    // конструктор сработает при создании эпика из Файла
+    public Epic(Integer id, String name, Status status, String description, LocalDateTime startTime, Long duration) {
+        super(id, name, status, description, startTime, duration);
     }
 
 
@@ -89,20 +93,28 @@ public class Epic extends Task {
                 isDifferentStatus = true;
             }
 
-            // если время начала эпика
-            if (getStartTime().isBefore(startTimeOfSubTasks)) {
-                setStartTime(subTask.getStartTime());
+            // Рассчитываем время начала эпика, если startTime у subTask не null и меньше текущего времени начала эпика
+            if (subTask.getStartTime() != null &&
+                    (startTimeOfSubTasks == null || subTask.getStartTime().isBefore(startTimeOfSubTasks))) {
+                startTimeOfSubTasks = subTask.getStartTime();
             }
 
-            if (subTask.getEndTime().isAfter(endTimeOfSubTasks)) {
-                setEndTime(subTask.getEndTime());
+            // Рассчитываем время окончания эпика, если endTime у subTask не null и больше текущего времени окончания эпика
+            if (subTask.getEndTime() != null &&
+                    (endTimeOfSubTasks == null || subTask.getEndTime().isAfter(endTimeOfSubTasks))) {
+                endTimeOfSubTasks = subTask.getEndTime();
             }
 
-            durationOfSubTasks = durationOfSubTasks + subTask.getDuration().toMinutes();
+            // Увеличиваем продолжительность эпика на продолжительность текущей задачи
+            if (subTask.getDuration() != null) {
+                durationOfSubTasks += subTask.getDuration().toMinutes();
+            }
 
         }
 
-        setDuration(Duration.ofMinutes(durationOfSubTasks));
+        setStartTime(startTimeOfSubTasks);
+        endTime = endTimeOfSubTasks;
+        setDuration(durationOfSubTasks);
 
         if (isDifferentStatus) {
             this.setStatus(Status.IN_PROGRESS);

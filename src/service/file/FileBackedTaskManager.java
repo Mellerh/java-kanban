@@ -213,9 +213,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      */
     public String toString(Task task) {
 
+        Long taskGetDuration = null;
+        if (task.getDuration() != null) {
+            taskGetDuration = task.getDuration().toMinutes();
+        }
+
         return task.getId() + "," + task.getTaskType() + "," + task.getName() + ","
                 + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId() + ","
-                + task.getDuration().toMinutes() + "," + task.getStartTime();
+                + taskGetDuration + "," + task.getStartTime();
 
     }
 
@@ -233,9 +238,18 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(valuesFromSting[3]);
         String description = valuesFromSting[4];
 
-        // парсим строку в число
-        long duration = Integer.parseInt(valuesFromSting[6]);
-        LocalDateTime startTime = LocalDateTime.parse(valuesFromSting[7]);
+
+        // парсим строку-продолжительность в число
+        Long duration = null;
+        if (!valuesFromSting[6].equals("null")) {
+            duration = Long.parseLong(valuesFromSting[6]);
+        }
+
+        // парсим строку-startTime в LocalDate
+        LocalDateTime startTime = null;
+        if (!valuesFromSting[7].equals("null")) {
+            startTime = LocalDateTime.parse(valuesFromSting[7]);
+        }
 
 
         Integer epicId = null;

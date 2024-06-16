@@ -1,4 +1,5 @@
 id,type,name,status,description,epic,duration,startTime
-1,Task,task1,NEW,descriptionTask1,null,15,2024-06-15T20:34:56.539553
-2,Epic,epic1,NEW,descriptionEpic1,null,15,2024-06-15T20:34:56.542003
-3,SubTask,subTask1Epic1,NEW,descriptionSubTask1Epic1,2,15,2024-06-15T20:34:56.542003
+1,Task,Задача1,DONE,новое описание задачи1,null,15,2024-06-16T23:39:22.236858
+2,Epic,Эпик1,IN_PROGRESS,описание эпика1,null,40,2025-12-21T21:21:21
+3,SubTask,сабтаск1 эпика1,DONE,описание сабтаска1 эпика1,2,15,2026-12-21T21:21:21
+4,SubTask,сабтаск2 эпика1,IN_PROGRESS,описание сабтаска2 эпика1,2,25,2025-12-21T21:21:21

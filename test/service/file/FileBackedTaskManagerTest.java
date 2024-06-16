@@ -15,6 +15,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,10 +42,14 @@ class FileBackedTaskManagerTest {
         taskManager = Managers.getDefault();
         fileBackedTaskManager = new FileBackedTaskManager(new InMemoryHistoryManager());
 
-        task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
+        task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1",
+                LocalDateTime.now(), 15L));
+
         epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));
-        subTask = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1", Status.NEW,
-                "descriptionSubTask1Epic1"));
+
+        subTask = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1",
+                Status.NEW, "descriptionSubTask1Epic1", LocalDateTime.parse("2026-12-21T21:21:21"),
+                15L));
 
 
         // создаём файл и добавляем в него данные
@@ -84,6 +89,8 @@ class FileBackedTaskManagerTest {
         assertEqualsListOfTasks(taskManagerLoader.getEpics(), taskManager.getEpics());
         assertEqualsListOfTasks(taskManagerLoader.getSubTasks(), taskManager.getSubTasks());
 
+
+        System.out.println(taskManagerLoader.getEpics());
     }
 
     @DisplayName("Тест проверяет корректное преобразование задачи в строку")
