@@ -73,7 +73,10 @@ class InMemoryHistoryManagerTest {
         listOfViewedTasks.remove(epic);
         assertEquals(listOfViewedTasks, taskManager.getHistory(), "Неккоректное удаление просмотренных задач" +
                 "из списка");
-
     }
+
+
+    // в принципе, все тесты, которые проверяют граничные условия - есть выше. Поэтому не знаю, нужно ли создавать
+    // для этого новый метод
 
 }

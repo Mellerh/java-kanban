@@ -37,6 +37,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
+
     // Task
     @Override
     public List<Task> getTasks() {
@@ -182,6 +183,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 // Добавляем Task
                 if (task.getTaskType() == TaskType.Task) {
                     tasks.put(task.getId(), task);
+                    prioritizedTasks.add(task);
                 }
 
                 // Добавляем Epic
@@ -192,11 +194,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 // Добавляем SubTask
                 if (task.getTaskType() == TaskType.SubTask) {
                     subTasks.put(task.getId(), (SubTask) task);
+                    prioritizedTasks.add(task);
                 }
 
                 if (maxId < id) {
                     maxId = id;
                 }
+
+
             }
 
             // Сохраняем максимальный ID задач
@@ -259,19 +264,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         TaskType taskType = TaskType.valueOf(valuesFromSting[1]);
 
-        switch (taskType) {
-            case TaskType.Task:
-                task = new Task(id, name, status, description, startTime, duration);
-                break;
-
-            case TaskType.Epic:
-                task = new Epic(id, name, status, description, startTime, duration);
-                break;
-
-            case TaskType.SubTask:
-                task = new SubTask(id, name, status, description, epicId, startTime, duration);
-                break;
-        }
+        task = switch (taskType) {
+            case TaskType.Task -> new Task(id, name, status, description, startTime, duration);
+            case TaskType.Epic -> new Epic(id, name, status, description, startTime, duration);
+            case TaskType.SubTask -> new SubTask(id, name, status, description, epicId, startTime, duration);
+        };
 
         return task;
     }

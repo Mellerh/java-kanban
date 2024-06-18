@@ -1,56 +1,39 @@
 package service.file;
 
-import model.Epic;
-import model.Status;
-import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.Managers;
 import service.TaskManager;
+import service.TaskManagerTest;
 import service.memory.InMemoryHistoryManager;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
-    TaskManager taskManager;
+    @Override
+    protected FileBackedTaskManager createManager() {
+        return new FileBackedTaskManager(new InMemoryHistoryManager());
+    }
+
+
     TaskManager taskManagerLoader;
     FileBackedTaskManager fileBackedTaskManager;
     Path tempFile;
 
-    private Task task;
-    private Epic epic;
-    private SubTask subTask;
-
-    private List<Task> tasks;
-    private List<Epic> epics;
-    private List<SubTask> subTasks;
-
 
     @BeforeEach
-    void init() {
+    protected void init() {
+        super.init();
 
-        taskManager = Managers.getDefault();
-        fileBackedTaskManager = new FileBackedTaskManager(new InMemoryHistoryManager());
-
-        task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1",
-                LocalDateTime.now(), 15L));
-
-        epic = taskManager.createEpic(new Epic("epic1", "descriptionEpic1"));
-
-        subTask = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1",
-                Status.NEW, "descriptionSubTask1Epic1", LocalDateTime.parse("2026-12-21T21:21:21"),
-                15L));
-
+        fileBackedTaskManager = createManager();
 
         // создаём файл и добавляем в него данные
         try {
@@ -77,6 +60,7 @@ class FileBackedTaskManagerTest {
         // создаём новый менеджер, передав в него задачи из временного файла
         taskManagerLoader = FileBackedTaskManager.loadFromFile(tempFile);
 
+
     }
 
 
@@ -89,8 +73,6 @@ class FileBackedTaskManagerTest {
         assertEqualsListOfTasks(taskManagerLoader.getEpics(), taskManager.getEpics());
         assertEqualsListOfTasks(taskManagerLoader.getSubTasks(), taskManager.getSubTasks());
 
-
-        System.out.println(taskManagerLoader.getEpics());
     }
 
     @DisplayName("Тест проверяет корректное преобразование задачи в строку")

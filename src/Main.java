@@ -38,13 +38,12 @@ public class Main {
 
 
         TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
-//        System.out.println("taskManagerLoader:");
+
 //        System.out.println(taskManagerLoader.getTasks());
 //        System.out.println(taskManagerLoader.getEpics());
 //        System.out.println(taskManagerLoader.getSubTasks());
 
 
-        System.out.println(taskUpdated);
 //        System.out.println(taskManager.getPrioritizedTasks());
     }
 

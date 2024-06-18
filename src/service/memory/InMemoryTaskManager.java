@@ -28,7 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
     private int id = 0;
 
     // поле для хранение отсортированного списка задач и подЗадач по их приоритету (времени начала startTime)
-    Set<Task> prioritizedTasks;
+    protected Set<Task> prioritizedTasks;
 
 
     public InMemoryTaskManager(HistoryManager inMemoryHistoryManager) {
