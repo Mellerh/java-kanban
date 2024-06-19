@@ -1,5 +1,6 @@
 package service.file;
 
+import exception.ValidationException;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +31,7 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
 
     @BeforeEach
-    protected void init() {
+    protected void init() throws ValidationException {
         super.init();
 
         fileBackedTaskManager = createManager();

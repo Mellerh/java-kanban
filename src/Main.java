@@ -1,3 +1,5 @@
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ValidationException, NotFoundException {
 
         TaskManager taskManager = Managers.getDefault();
 
@@ -38,13 +40,6 @@ public class Main {
 
 
         TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
-
-//        System.out.println(taskManagerLoader.getTasks());
-//        System.out.println(taskManagerLoader.getEpics());
-//        System.out.println(taskManagerLoader.getSubTasks());
-
-
-//        System.out.println(taskManager.getPrioritizedTasks());
     }
 
 

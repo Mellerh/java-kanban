@@ -1,5 +1,7 @@
 package service;
 
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -34,7 +36,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
 
     @BeforeEach
-    protected void init() {
+    protected void init() throws ValidationException {
         taskManager = createManager();
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1",
@@ -51,13 +53,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @DisplayName("Проверяем корректность работы выброса исключения при работе с задачами")
     public void shouldCheckTaskTimeOfTasks() {
 
-        Assertions.assertThrows(RuntimeException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1",
                     LocalDateTime.now(), 15L));
         }, "должно быть выброшено исключение из-за пересенчения задач");
 
 
-        Assertions.assertThrows(RuntimeException.class, () -> {
+        Assertions.assertThrows(Exception.class, () -> {
             taskManager.createTask(new SubTask(epic.getId(), "subTask1Epic1",
                     Status.NEW, "descriptionSubTask1Epic1", LocalDateTime.parse("2026-12-21T21:14:00"),
                     15L));
@@ -122,7 +124,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("Метод должен корректно обновлять task")
-    void shouldUpdateTask() {
+    void shouldUpdateTask() throws NotFoundException, ValidationException {
         task.setDescription("descriptionTask1Updated");
         task.setStatus(Status.IN_PROGRESS);
 
@@ -188,7 +190,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("Метод должен корректно обновлять epic")
-    void shouldUpdateEpic() {
+    void shouldUpdateEpic() throws NotFoundException {
         epic.setDescription("descriptionEpic1Updated");
         epic.setStatus(Status.IN_PROGRESS);
 
@@ -262,7 +264,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("Метод должен корректно обновлять subTask")
-    void shouldUpdateSubTask() {
+    void shouldUpdateSubTask() throws ValidationException, NotFoundException {
         subTask.setDescription("descriptionSubTask1Epic1Updated");
         subTask.setStatus(Status.IN_PROGRESS);
 
@@ -305,7 +307,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     @DisplayName("Метод проверяет целостность данных при изменении полей задачи")
-    void shouldUpdateListOfViewedTasksAfterSetDateIntoThem() {
+    void shouldUpdateListOfViewedTasksAfterSetDateIntoThem() throws NotFoundException {
         task.setName("new name");
         task.setDescription("new description");
         taskManager.getTaskById(task.getId());

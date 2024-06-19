@@ -1,5 +1,7 @@
 package service.memory;
 
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -25,7 +27,7 @@ class InMemoryHistoryManagerTest {
 
 
     @BeforeEach
-    void init() {
+    void init() throws ValidationException {
         taskManager = Managers.getDefault();
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
@@ -37,7 +39,7 @@ class InMemoryHistoryManagerTest {
     @Test
     @DisplayName("Метод проверяет корректность добавление задачи в список просмотренных, и если задача добавляется" +
             "повторно, удаляет первое вхождение")
-    void shouldAddViewedCorrectly() {
+    void shouldAddViewedCorrectly() throws NotFoundException {
         taskManager.getTaskById(task.getId());
         taskManager.getEpicById(epic.getId());
         taskManager.getSubTaskById(subTask.getId());
@@ -53,7 +55,7 @@ class InMemoryHistoryManagerTest {
     @Test
     @DisplayName("Метод проверяет корректный вывод всех просмотренных задч, с учётом повторно-просмотренных. " +
             "Также метод проверяет корректность удаления задач из списка просмотренных")
-    void shouldReturnCorrectListOfViewedTasks() {
+    void shouldReturnCorrectListOfViewedTasks() throws NotFoundException {
         taskManager.getTaskById(task.getId());
         taskManager.getEpicById(epic.getId());
         taskManager.getSubTaskById(subTask.getId());
@@ -74,9 +76,5 @@ class InMemoryHistoryManagerTest {
         assertEquals(listOfViewedTasks, taskManager.getHistory(), "Неккоректное удаление просмотренных задач" +
                 "из списка");
     }
-
-
-    // в принципе, все тесты, которые проверяют граничные условия - есть выше. Поэтому не знаю, нужно ли создавать
-    // для этого новый метод
 
 }

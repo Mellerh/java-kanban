@@ -38,8 +38,6 @@ public class InMemoryTaskManager implements TaskManager {
         this.subTasks = new HashMap<>();
         this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
                 Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
-
-//        this.prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
     }
 
     /**
@@ -70,7 +68,7 @@ public class InMemoryTaskManager implements TaskManager {
     /**
      * метод сравнивает пересечение задач
      */
-    private void checkTaskTime(Task task) {
+    private void checkTaskTime(Task task) throws ValidationException {
 
         for (Task t : getPrioritizedTasks()) {
             // исключаем сравнение задачи с самой собой
@@ -129,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для поиска Task по её id
      */
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws NotFoundException {
         Task task = tasks.get(id);
         if (task == null) {
             throw new NotFoundException("Задача с id " + id + " не найдена");
@@ -144,7 +142,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для создания нового Task
      */
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ValidationException {
         // создаём id для задачи
         idGenerator();
         task.setId(this.id);
@@ -167,7 +165,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для обновления Task
      */
     @Override
-    public void upDateTask(Task task) {
+    public void upDateTask(Task task) throws NotFoundException, ValidationException {
 
         Task originalTask = tasks.get(task.getId());
         if (originalTask == null) {
@@ -247,7 +245,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для обновления Epic
      */
     @Override
-    public void updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) throws NotFoundException {
         Epic savedEpic = epics.get(epic.getId());
 
         // проверяем, что epic нашёлся
@@ -331,7 +329,7 @@ public class InMemoryTaskManager implements TaskManager {
      * также метод добавляем Субтаск в соответсвующий Эпик
      */
     @Override
-    public SubTask createSubTask(SubTask subTask) {
+    public SubTask createSubTask(SubTask subTask) throws ValidationException {
         // создаём id для задачи
         idGenerator();
         subTask.setId(this.id);
@@ -357,7 +355,7 @@ public class InMemoryTaskManager implements TaskManager {
      * метод для обновления SubTask
      */
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public void updateSubTask(SubTask subTask) throws NotFoundException, ValidationException {
 
         SubTask originalSubTask = subTasks.get(subTask.getId());
         if (originalSubTask == null) {

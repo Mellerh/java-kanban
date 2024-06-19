@@ -2,6 +2,8 @@ package service.file;
 
 import exception.ManagerLoadException;
 import exception.ManagerSaveException;
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.*;
 import service.HistoryManager;
 import service.memory.InMemoryHistoryManager;
@@ -51,19 +53,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws NotFoundException {
         return super.getTaskById(id);
     }
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ValidationException {
         Task newTask = super.createTask(task);
         save();
         return newTask;
     }
 
     @Override
-    public void upDateTask(Task task) {
+    public void upDateTask(Task task) throws ValidationException, NotFoundException {
         super.upDateTask(task);
         save();
     }
@@ -100,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) throws NotFoundException {
         super.updateEpic(epic);
         save();
     }
@@ -135,14 +137,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public SubTask createSubTask(SubTask subTask) {
+    public SubTask createSubTask(SubTask subTask) throws ValidationException {
         SubTask newSubTask = super.createSubTask(subTask);
         save();
         return newSubTask;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public void updateSubTask(SubTask subTask) throws ValidationException, NotFoundException {
         super.updateSubTask(subTask);
         save();
     }
