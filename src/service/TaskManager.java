@@ -1,5 +1,7 @@
 package service;
 
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
@@ -13,6 +15,8 @@ public interface TaskManager {
 
     int getId();
 
+    List<Task> getPrioritizedTasks();
+
     List<Task> getHistory();
 
     void removeTaskFromViewed(int id);
@@ -21,11 +25,11 @@ public interface TaskManager {
 
     void removeAllTasks();
 
-    Task getTaskById(int id);
+    Task getTaskById(int id) throws NotFoundException;
 
-    Task createTask(Task task);
+    Task createTask(Task task) throws ValidationException;
 
-    void upDateTask(Task task);
+    void upDateTask(Task task) throws NotFoundException, ValidationException;
 
     void removeTaskById(int id);
 
@@ -37,7 +41,7 @@ public interface TaskManager {
 
     Epic createEpic(Epic epic);
 
-    void updateEpic(Epic epic);
+    void updateEpic(Epic epic) throws NotFoundException;
 
     void removeEpicById(int id);
 
@@ -49,9 +53,9 @@ public interface TaskManager {
 
     SubTask getSubTaskById(int id);
 
-    SubTask createSubTask(SubTask subTask);
+    SubTask createSubTask(SubTask subTask) throws ValidationException;
 
-    void updateSubTask(SubTask subTask);
+    void updateSubTask(SubTask subTask) throws NotFoundException, ValidationException;
 
     void removeSubTaskById(int id);
 

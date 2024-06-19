@@ -1,3 +1,5 @@
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -7,10 +9,11 @@ import service.TaskManager;
 import service.file.FileBackedTaskManager;
 
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ValidationException, NotFoundException {
 
         TaskManager taskManager = Managers.getDefault();
 
@@ -20,7 +23,7 @@ public class Main {
         Task taskFromManager = taskManager.getTaskById(task.getId());
 
         Task taskUpdated = new Task(taskFromManager.getId(), "Задача1", Status.DONE,
-                "новое описание задачи1");
+                "новое описание задачи1", LocalDateTime.now(), 15L);
         taskManager.upDateTask(taskUpdated);
 
 
@@ -28,18 +31,15 @@ public class Main {
 
 
         SubTask subTask = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск1 эпика1",
-                Status.DONE, "описание сабтаска1 эпика1"));
+                Status.DONE, "описание сабтаска1 эпика1", LocalDateTime.parse("2026-12-21T21:21:21"),
+                15L));
+
+        SubTask subTask1 = taskManager.createSubTask(new SubTask(epic.getId(), "сабтаск2 эпика1",
+                Status.IN_PROGRESS, "описание сабтаска2 эпика1", LocalDateTime.parse("2025-12-21T21:21:21"),
+                25L));
 
 
         TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
-        System.out.println("taskManagerLoader:");
-        System.out.println(taskManagerLoader.getTasks());
-        System.out.println(taskManagerLoader.getEpics());
-        System.out.println(taskManagerLoader.getSubTasks());
-
-        System.out.println(taskManagerLoader.getId());
-
-
     }
 
 

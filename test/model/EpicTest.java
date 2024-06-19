@@ -1,5 +1,6 @@
 package model;
 
+import exception.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ class EpicTest {
 
 
     @BeforeEach
-    void init() {
+    void init() throws ValidationException {
         taskManager = Managers.getDefault();
 
         task = taskManager.createTask(new Task("task1", Status.NEW, "descriptionTask1"));
@@ -48,7 +49,7 @@ class EpicTest {
 
     @Test
     @DisplayName("Проверям корректное обновление статуса эпика")
-    void shouldUpdateStatusOfEpicCorrectly() {
+    void shouldUpdateStatusOfEpicCorrectly() throws ValidationException {
         assertEquals(Status.NEW, epic.getStatus(), "Неккоректный статус эпика. Проблема с методом обновления" +
                 " updateSubTask");
 
@@ -62,7 +63,7 @@ class EpicTest {
 
     @Test
     @DisplayName("Проверяем корректное обновление subTask в листе subTasks")
-    void shouldUpdateSubTaskInSubTasksListCorrectly() {
+    void shouldUpdateSubTaskInSubTasksListCorrectly() throws ValidationException {
         SubTask subTaskUpdated = taskManager.createSubTask(new SubTask(epic.getId(), "subTask1Epic1",
                 Status.IN_PROGRESS, "descriptionSubTask1Epic1Updated"));
 

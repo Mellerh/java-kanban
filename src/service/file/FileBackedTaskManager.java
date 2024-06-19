@@ -2,6 +2,8 @@ package service.file;
 
 import exception.ManagerLoadException;
 import exception.ManagerSaveException;
+import exception.NotFoundException;
+import exception.ValidationException;
 import model.*;
 import service.HistoryManager;
 import service.memory.InMemoryHistoryManager;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
+
     // Task
     @Override
     public List<Task> getTasks() {
@@ -49,19 +53,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws NotFoundException {
         return super.getTaskById(id);
     }
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ValidationException {
         Task newTask = super.createTask(task);
         save();
         return newTask;
     }
 
     @Override
-    public void upDateTask(Task task) {
+    public void upDateTask(Task task) throws ValidationException, NotFoundException {
         super.upDateTask(task);
         save();
     }
@@ -98,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateEpic(Epic epic) {
+    public void updateEpic(Epic epic) throws NotFoundException {
         super.updateEpic(epic);
         save();
     }
@@ -133,14 +137,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public SubTask createSubTask(SubTask subTask) {
+    public SubTask createSubTask(SubTask subTask) throws ValidationException {
         SubTask newSubTask = super.createSubTask(subTask);
         save();
         return newSubTask;
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
+    public void updateSubTask(SubTask subTask) throws ValidationException, NotFoundException {
         super.updateSubTask(subTask);
         save();
     }
@@ -181,6 +185,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 // Добавляем Task
                 if (task.getTaskType() == TaskType.Task) {
                     tasks.put(task.getId(), task);
+                    prioritizedTasks.add(task);
                 }
 
                 // Добавляем Epic
@@ -191,11 +196,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 // Добавляем SubTask
                 if (task.getTaskType() == TaskType.SubTask) {
                     subTasks.put(task.getId(), (SubTask) task);
+                    prioritizedTasks.add(task);
                 }
 
                 if (maxId < id) {
                     maxId = id;
                 }
+
+
             }
 
             // Сохраняем максимальный ID задач
@@ -212,8 +220,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
      */
     public String toString(Task task) {
 
+        Long taskGetDuration = null;
+        if (task.getDuration() != null) {
+            taskGetDuration = task.getDuration().toMinutes();
+        }
+
         return task.getId() + "," + task.getTaskType() + "," + task.getName() + ","
-                + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId();
+                + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId() + ","
+                + taskGetDuration + "," + task.getStartTime();
 
     }
 
@@ -231,6 +245,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(valuesFromSting[3]);
         String description = valuesFromSting[4];
 
+
+        // парсим строку-продолжительность в число
+        Long duration = null;
+        if (!valuesFromSting[6].equals("null")) {
+            duration = Long.parseLong(valuesFromSting[6]);
+        }
+
+        // парсим строку-startTime в LocalDate
+        LocalDateTime startTime = null;
+        if (!valuesFromSting[7].equals("null")) {
+            startTime = LocalDateTime.parse(valuesFromSting[7]);
+        }
+
+
         Integer epicId = null;
         if (!valuesFromSting[5].equals("null")) {
             epicId = Integer.valueOf(valuesFromSting[5]);
@@ -238,19 +266,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         TaskType taskType = TaskType.valueOf(valuesFromSting[1]);
 
-        switch (taskType) {
-            case TaskType.Task:
-                task = new Task(id, name, status, description);
-                break;
-
-            case TaskType.Epic:
-                task = new Epic(id, name, status, description);
-                break;
-
-            case TaskType.SubTask:
-                task = new SubTask(id, name, status, description, epicId);
-                break;
-        }
+        task = switch (taskType) {
+            case TaskType.Task -> new Task(id, name, status, description, startTime, duration);
+            case TaskType.Epic -> new Epic(id, name, status, description, startTime, duration);
+            case TaskType.SubTask -> new SubTask(id, name, status, description, epicId, startTime, duration);
+        };
 
         return task;
     }
@@ -263,7 +283,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file.toFile()))) {
 
-            writer.append("id,type,name,status,description,epic");
+            writer.append("id,type,name,status,description,epic,duration,startTime");
             writer.newLine();
 
             for (Map.Entry<Integer, Task> entry : tasks.entrySet()) {
