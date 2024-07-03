@@ -132,12 +132,16 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     private void handleDeleteEpicById(HttpExchange exchange, String taskIdStr) throws IOException {
         try {
             int taskId = Integer.parseInt(taskIdStr);
-            taskManager.removeEpicById(taskId);
-            sendText(exchange, "Задача удалена", 204);
+
+            if (taskManager.getEpicById(taskId) == null) {
+                sendNotFound(exchange);
+            } else {
+                taskManager.removeEpicById(taskId);
+                sendText(exchange, "Задача удалена", 204);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            sendNotFound(exchange);
         }
     }
 

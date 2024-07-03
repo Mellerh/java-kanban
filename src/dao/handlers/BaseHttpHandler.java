@@ -9,11 +9,18 @@ public abstract class BaseHttpHandler {
 
     protected void sendText(HttpExchange exchange, String text, int statusCode) throws IOException {
 
-        byte[] resp = text.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-        exchange.sendResponseHeaders(statusCode, resp.length);
-        exchange.getResponseBody().write(resp);
-        exchange.getResponseBody().close();
+        try (exchange) {
+            try {
+                byte[] resp = text.getBytes(StandardCharsets.UTF_8);
+                exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
+                exchange.sendResponseHeaders(statusCode, resp.length);
+                exchange.getResponseBody().write(resp);
+                exchange.getResponseBody();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 
     }
