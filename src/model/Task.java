@@ -10,7 +10,7 @@ public class Task {
     protected String name;
     private Status status;
     private String description;
-    private int id;
+    private Integer id;
 
 
     private LocalDateTime startTime;
