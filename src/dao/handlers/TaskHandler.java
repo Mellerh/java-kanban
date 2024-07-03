@@ -3,7 +3,6 @@ package dao.handlers;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import exception.NotFoundException;
 import exception.ValidationException;
 import model.Task;
 import service.TaskManager;
@@ -30,10 +29,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             switch (method) {
                 case "GET":
-                    if (pathParts.length == 2) {
-                        handleGetAllTasks(exchange);
-                    } else if (pathParts.length == 3) {
+                    if (pathParts.length == 3) {
                         handleGetTaskById(exchange, pathParts[2]);
+                    } else if (pathParts.length == 2) {
+                        handleGetAllTasks(exchange);
                     } else {
                         sendNotFound(exchange);
                     }
@@ -64,6 +63,9 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             String response = gson.toJson(taskManager.getTasks());
             sendText(exchange, response, 200);
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendNotFound(exchange);
         }
 
     }
@@ -74,11 +76,12 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             Task task = taskManager.getTaskById(taskId);
             if (task == null) {
                 sendNotFound(exchange);
+
             } else {
                 String response = gson.toJson(task);
                 sendText(exchange, response, 200);
             }
-        } catch (NumberFormatException | NotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             sendNotFound(exchange);
         }
@@ -102,8 +105,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
         try {
             int taskId = Integer.parseInt(taskIdStr);
             taskManager.removeTaskById(taskId);
-            sendText(exchange, "Задача удалена", 200);
-        } catch (NumberFormatException e) {
+            sendText(exchange, "Задача удалена", 204);
+        } catch (Exception e) {
             e.printStackTrace();
             sendNotFound(exchange);
         }
