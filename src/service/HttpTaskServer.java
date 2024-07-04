@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 public class HttpTaskServer {
 
-    public final int PORT = 8080;
+    public final int port = 8080;
     private final HttpServer server;
     private final TaskManager taskManager;
     private final Gson gson;
@@ -26,7 +26,7 @@ public class HttpTaskServer {
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
         this.gson = getGson();
-        this.server = HttpServer.create(new InetSocketAddress(PORT), 0);
+        this.server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/tasks", new TaskHandler(taskManager, gson));
         server.createContext("/epics", new EpicHandler(taskManager, gson));
@@ -36,7 +36,7 @@ public class HttpTaskServer {
     }
 
     public void start() {
-        System.out.println("Starting server on port " + PORT);
+        System.out.println("Starting server on port " + port);
         server.start();
     }
 
