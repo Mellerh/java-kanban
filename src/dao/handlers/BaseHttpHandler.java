@@ -11,11 +11,10 @@ public abstract class BaseHttpHandler {
 
         try (exchange) {
             try {
-                byte[] resp = text.getBytes(StandardCharsets.UTF_8);
+                byte[] response = text.getBytes(StandardCharsets.UTF_8);
                 exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
-                exchange.sendResponseHeaders(statusCode, resp.length);
-                exchange.getResponseBody().write(resp);
-                exchange.getResponseBody();
+                exchange.sendResponseHeaders(statusCode, 0);
+                exchange.getResponseBody().write(response);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
