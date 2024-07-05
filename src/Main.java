@@ -4,19 +4,20 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
+import service.HttpTaskServer;
 import service.Managers;
 import service.TaskManager;
 import service.file.FileBackedTaskManager;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 
 public class Main {
 
-    public static void main(String[] args) throws ValidationException, NotFoundException {
+    public static void main(String[] args) throws ValidationException, NotFoundException, IOException {
 
         TaskManager taskManager = Managers.getDefault();
-
 
         Task task = taskManager.createTask(new Task("Задача1", Status.NEW, "описание задачи1"));
 
@@ -39,7 +40,13 @@ public class Main {
                 25L));
 
 
-        TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("resources/task.csv"));
+        taskManager.getTaskById(1);
+        taskManager.getEpicById(2);
+        HttpTaskServer httpTaskServer = new HttpTaskServer(taskManager);
+        httpTaskServer.start();
+
+
+        TaskManager taskManagerLoader = FileBackedTaskManager.loadFromFile(Paths.get("task.csv"));
     }
 
 

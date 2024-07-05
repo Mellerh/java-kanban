@@ -26,7 +26,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     private final Path file;
 
     public FileBackedTaskManager(HistoryManager historyManager) {
-        this(historyManager, Paths.get("resources/task.csv"));
+        this(historyManager, Paths.get("task.csv"));
     }
 
     private FileBackedTaskManager(HistoryManager inMemoryHistoryManager, Path file) {

@@ -10,7 +10,7 @@ public class Task {
     protected String name;
     private Status status;
     private String description;
-    private int id;
+    private Integer id;
 
 
     private LocalDateTime startTime;
@@ -63,6 +63,14 @@ public class Task {
     }
 
     public Task(Integer id, String name, Status status, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+
+        this.startTime = null;
+        this.duration = null;
+        this.endTime = null;
     }
 
 
