@@ -45,7 +45,7 @@ public class HttpTaskServer {
         System.out.println("Server stopped");
     }
 
-    private static Gson getGson() {
+    public static Gson getGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
         gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());

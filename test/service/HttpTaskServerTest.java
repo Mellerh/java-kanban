@@ -1,10 +1,7 @@
 package service;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import dao.adapters.DurationAdapter;
-import dao.adapters.LocalDateTimeAdapter;
 import exception.ValidationException;
 import model.Epic;
 import model.Status;
@@ -20,12 +17,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static service.HttpTaskServer.getGson;
 
 class HttpTaskServerTest {
 
@@ -79,25 +76,16 @@ class HttpTaskServerTest {
         HttpClient client = HttpClient.newHttpClient();
 
         try (client) {
-            try {
+            URI uriTasks = URI.create("http://localhost:8080/tasks");
 
-                URI uriTasks = URI.create("http://localhost:8080/tasks");
-                HttpRequest requestTasks = HttpRequest.newBuilder().uri(uriTasks).GET().build();
-
-                HttpResponse<String> responseTasks = client.send(requestTasks, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> responseTasks = sendTaskGet(client, uriTasks);
+            assertEquals(200, responseTasks.statusCode());
 
 
-                assertEquals(200, responseTasks.statusCode());
-
-                // сравниваем списки задач
-                List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
-                }.getType());
-                assertEqualsListOfTasks(taskManager.getTasks(), taskList);
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // сравниваем списки задач
+            List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
+            }.getType());
+            assertEqualsListOfTasks(taskManager.getTasks(), taskList);
 
         }
 
@@ -114,37 +102,24 @@ class HttpTaskServerTest {
 
         try (client) {
 
-            try {
-                URI uriTasks = URI.create("http://localhost:8080/tasks");
+            URI uriTasks = URI.create("http://localhost:8080/tasks");
 
-                // ДОБАВЛЯЕМ ЗАДАЧУ ЧЕРЕЗ ПОСТ
-                Task taskToPost = new Task(4, "task2", Status.NEW, "descriptionTask2");
-                String taskToPostGson = gson.toJson(taskToPost);
+            // ДОБАВЛЯЕМ ЗАДАЧУ ЧЕРЕЗ ПОСТ
+            Task taskToPost = new Task(4, "task2", Status.NEW, "descriptionTask2");
 
-                HttpRequest postTask = HttpRequest.newBuilder()
-                        .uri(uriTasks)
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(taskToPostGson))
-                        .build();
-
-                HttpResponse<String> responsePostTask = client.send(postTask, HttpResponse.BodyHandlers.ofString());
-                assertEquals(201, responsePostTask.statusCode(), "неккоректный код ответа");
+            HttpResponse<String> responsePostTask = sendPostTask(client, uriTasks, taskToPost);
+            assertEquals(201, responsePostTask.statusCode(), "неккоректный код ответа");
 
 
-                // ПРОВЕРЯЕМ, ЧТО ЗАДАЧА ДОБАВИЛАСЬ
-                HttpRequest getTasks = HttpRequest.newBuilder().uri(uriTasks).GET().build();
-                HttpResponse<String> responseTasks = client.send(getTasks, HttpResponse.BodyHandlers.ofString());
+            // ПРОВЕРЯЕМ, ЧТО ЗАДАЧА ДОБАВИЛАСЬ
+            HttpResponse<String> responseTasks = sendTaskGet(client, uriTasks);
 
-                // сравниваем списки задач
-                List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
-                }.getType());
+            // сравниваем списки задач
+            List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
+            }.getType());
 
-                assertEqualsListOfTasks(taskManager.getTasks(), taskList);
+            assertEqualsListOfTasks(taskManager.getTasks(), taskList);
 
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
         }
 
@@ -152,39 +127,30 @@ class HttpTaskServerTest {
 
     @DisplayName("Тест проверят корректность работы сервера на запрос DELETE")
     @Test
-    void shouldDeleteTask() throws IOException, InterruptedException {
+    void shouldDeleteTask() throws IOException, InterruptedException, ValidationException {
+
+        // задача, которая должна остаться, после удаления task1
+        taskManager.createTask(new Task("task3", Status.NEW, "descriptionTask2"));
 
         HttpClient client = HttpClient.newHttpClient();
         try (client) {
-            try {
-                URI uriTasks = URI.create("http://localhost:8080/tasks/1");
 
-                taskManager.createTask(new Task("task3", Status.NEW, "descriptionTask2"));
+            URI uriTasks = URI.create("http://localhost:8080/tasks/1");
 
-                // УДАЛЯЕМ ЗАДАЧУ
-                HttpRequest deleteTask = HttpRequest.newBuilder()
-                        .uri(uriTasks)
-                        .DELETE()
-                        .build();
-
-                HttpResponse<String> responsePostTask = client.send(deleteTask, HttpResponse.BodyHandlers.ofString());
-                assertEquals(204, responsePostTask.statusCode(), "неккоректный код ответа");
+            // УДАЛЯЕМ ЗАДАЧУ
+            HttpResponse<String> responsePostTask = sendDeleteTask(client, uriTasks);
+            assertEquals(204, responsePostTask.statusCode(), "неккоректный код ответа");
 
 
-                // ПРОВЕРЯЕМ, ЧТО ЗАДАЧА УДАЛИЛАСЬ
-                URI uriAllTasks = URI.create("http://localhost:8080/tasks");
-                HttpRequest getTasks = HttpRequest.newBuilder().uri(uriAllTasks).GET().build();
-                HttpResponse<String> responseTasks = client.send(getTasks, HttpResponse.BodyHandlers.ofString());
+            // ПРОВЕРЯЕМ, ЧТО ЗАДАЧА УДАЛИЛАСЬ
+            URI uriAllTasks = URI.create("http://localhost:8080/tasks");
+            HttpResponse<String> responseTasks = sendTaskGet(client, uriAllTasks);
 
-                // сравниваем списки задач
-                List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
-                }.getType());
+            List<Task> taskList = gson.fromJson(responseTasks.body(), new TypeToken<ArrayList<Task>>() {
+            }.getType());
 
-                assertEquals(taskManager.getTasks().size(), taskList.size());
+            assertEquals(taskManager.getTasks().size(), taskList.size());
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
 
@@ -192,14 +158,46 @@ class HttpTaskServerTest {
 
 
     /**
-     * метод создан для создания Gson
+     * метод отправляет GET запрос на сервер
      */
-    private static Gson getGson() {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter());
-        gsonBuilder.registerTypeAdapter(Duration.class, new DurationAdapter());
-        return gsonBuilder.create();
+    private HttpResponse<String> sendTaskGet(HttpClient client, URI uriTasks) throws IOException, InterruptedException {
+        HttpRequest requestTasks = HttpRequest.newBuilder().uri(uriTasks).GET().build();
+        return client.send(requestTasks, HttpResponse.BodyHandlers.ofString());
     }
+
+
+    /**
+     * метод отправляет POST запрос на сервер
+     */
+    private HttpResponse<String> sendPostTask(HttpClient client, URI uriTasks, Task taskToPost) throws IOException,
+            InterruptedException {
+
+        String taskToPostGson = gson.toJson(taskToPost);
+
+        HttpRequest postTask = HttpRequest.newBuilder()
+                .uri(uriTasks)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(taskToPostGson))
+                .build();
+
+        return client.send(postTask, HttpResponse.BodyHandlers.ofString());
+    }
+
+    /**
+     * метод отправляет DELETE запрос на сервер
+     */
+    private HttpResponse<String> sendDeleteTask(HttpClient client, URI uriTasks) throws IOException,
+            InterruptedException {
+
+        HttpRequest deleteTask = HttpRequest.newBuilder()
+                .uri(uriTasks)
+                .DELETE()
+                .build();
+
+        return client.send(deleteTask, HttpResponse.BodyHandlers.ofString());
+    }
+
+
 
     /**
      * метод создан для корректного сравнения задач
